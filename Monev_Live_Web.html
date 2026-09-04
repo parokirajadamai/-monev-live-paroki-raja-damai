@@ -516,7 +516,7 @@ const TEMPLATE_B64 = "UEsDBBQACAgIAI92E10AAAAAAAAAAAAAAAAaAAAAeGwvX3JlbHMvd29ya2
 // KONFIGURASI — GANTI BARIS INI SETELAH DEPLOY GOOGLE APPS SCRIPT
 // ============================================================
 const CONFIG = {
-  API_URL: "PASTE_URL_WEB_APP_DI_SINI", // contoh: https://script.google.com/macros/s/AKfycbx.../exec
+  API_URL: "https://script.google.com/macros/s/AKfycbyJ9kAs-g2JRdTZ-tuemUZa6CrU5wQq1EHdtIJxvwCIVUIWPyk1CjdlFIrQ7C6-EKrJ/exec", // contoh: https://script.google.com/macros/s/AKfycbx.../exec
 };
 // ============================================================
 
@@ -587,7 +587,7 @@ function checkStorageHealth(){
 }
 
 function apiConfigured(){
-  return CONFIG.API_URL && CONFIG.API_URL.indexOf('https://script.google.com/macros/s/AKfycbyJ9kAs-g2JRdTZ-tuemUZa6CrU5wQq1EHdtIJxvwCIVUIWPyk1CjdlFIrQ7C6-EKrJ/exec') === -1;
+  return CONFIG.API_URL && CONFIG.API_URL.indexOf('PASTE_URL') === -1;
 }
 
 async function apiGet(params){
