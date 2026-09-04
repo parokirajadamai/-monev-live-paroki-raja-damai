@@ -14,10 +14,22 @@
 body{margin:0;font-family:Calibri,'Segoe UI',Arial,sans-serif;background:var(--white);color:var(--ink);}
 .app{display:flex;height:100vh;overflow:hidden;}
 .topbar{position:fixed;top:0;left:0;right:0;height:64px;background:var(--maroon);color:var(--white);
-  display:flex;align-items:center;justify-content:space-between;padding:0 20px;z-index:20;}
-.topbar h1{font-size:17px;margin:0;font-weight:700;}
-.topbar .sub{font-size:12px;color:var(--gold-light);font-weight:400;}
-.topbar .right{display:flex;align-items:center;gap:14px;}
+  display:flex;align-items:center;justify-content:space-between;padding:0 20px;z-index:20;overflow:hidden;gap:10px;}
+.topbar h1{font-size:17px;margin:0;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.topbar .sub{font-size:12px;color:var(--gold-light);font-weight:400;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.topbar .right{display:flex;align-items:center;gap:14px;flex-shrink:0;}
+@media (max-width:700px){
+  .topbar{padding:0 10px;gap:6px;height:56px;}
+  .topbar h1{font-size:13.5px;}
+  .topbar .sub{font-size:10px;}
+  .topbar .right{gap:6px;}
+  .save-indicator, .sync-indicator{display:none;}
+  .pptx-btn, .export-btn{padding:7px 9px;font-size:0;gap:0;}
+  .pptx-btn i, .export-btn i{font-size:16px;}
+  .progress-pill{padding:5px 9px;font-size:11px;}
+  .rkt-tabs{margin-top:56px;}
+  .body-wrap{margin-top:56px;height:calc(100vh - 56px);}
+}
 .progress-pill{background:var(--maroon-dark);border-radius:20px;padding:6px 14px;font-size:13px;font-weight:700;}
 .save-indicator{font-size:11.5px;color:var(--gold-light);display:flex;align-items:center;gap:5px;opacity:0.85;}
 .export-btn{background:var(--gold);color:var(--maroon-dark);border:none;border-radius:8px;padding:9px 16px;
@@ -192,12 +204,19 @@ body{margin:0;font-family:Calibri,'Segoe UI',Arial,sans-serif;background:var(--w
 .mode-card-desc{font-size:12px;color:var(--gray);line-height:1.4;}
 
 /* ---- Modul Rencana Kerja Tahunan (RKT) ---- */
-.rkt-tabs{display:flex;gap:2px;background:var(--white);border-bottom:1px solid var(--line);padding:0 24px;}
+.rkt-tabs{display:flex;gap:2px;background:var(--white);border-bottom:1px solid var(--line);padding:0 24px;
+  overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:thin;margin-top:64px;}
 .rkt-tab{background:none;border:none;padding:14px 18px;font-size:13.5px;font-weight:600;color:var(--gray);cursor:pointer;
-  border-bottom:3px solid transparent;display:flex;align-items:center;gap:6px;}
+  border-bottom:3px solid transparent;display:flex;align-items:center;gap:6px;white-space:nowrap;flex-shrink:0;}
 .rkt-tab.active{color:var(--maroon);border-bottom-color:var(--maroon);}
 .rkt-tab:hover{color:var(--maroon);}
 .rkt-body{padding:22px 28px;max-width:980px;margin:0 auto;}
+@media (max-width:600px){
+  .rkt-tabs{padding:0 8px;}
+  .rkt-tab{padding:12px 10px;font-size:11.5px;gap:4px;}
+  .rkt-tab i{font-size:14px;}
+  .rkt-body{padding:16px 12px;}
+}
 .rkt-panel-note{background:#F5F2ED;border-left:4px solid var(--gold);border-radius:8px;padding:12px 16px;
   font-size:13px;color:var(--ink);margin-bottom:18px;line-height:1.5;}
 .rkt-lanjut-item{background:var(--white);border:1px solid var(--line);border-radius:10px;padding:14px 18px;margin-bottom:10px;}
