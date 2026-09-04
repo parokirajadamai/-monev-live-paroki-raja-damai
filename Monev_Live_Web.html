@@ -49,6 +49,11 @@ body{margin:0;font-family:Calibri,'Segoe UI',Arial,sans-serif;background:var(--w
 .badge-filled{font-size:10.5px;background:var(--ok);color:var(--white);border-radius:10px;padding:1px 7px;font-weight:700;}
 .badge-skip{font-size:10px;background:var(--line);color:var(--gray);border-radius:10px;padding:1px 7px;font-weight:700;}
 .badge-mit-cat{font-size:10px;background:#fbe8e8;color:var(--danger);border-radius:10px;padding:1px 7px;font-weight:700;}
+.cat-item.locked{cursor:not-allowed;opacity:0.55;}
+.cat-item.locked:hover{background:none;}
+.badge-done-check{font-size:11px;background:var(--ok);color:#fff;border-radius:10px;padding:1px 7px;font-weight:700;}
+.badge-done-partial{font-size:10px;background:var(--gold);color:#fff;border-radius:10px;padding:1px 7px;font-weight:700;}
+.badge-done-none{font-size:9.5px;background:none;border:1px dashed var(--line);color:var(--gray);border-radius:10px;padding:1px 7px;}
 .main{flex:1;overflow-y:auto;padding:24px 32px 60px;}
 .empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;height:70vh;
   color:var(--gray);text-align:center;}
@@ -173,6 +178,65 @@ body{margin:0;font-family:Calibri,'Segoe UI',Arial,sans-serif;background:var(--w
 .sync-ok{color:#c5e0c8;} .sync-pending{color:var(--gold-light);} .sync-error{color:#f0c4c4;}
 .sync-retry-btn{background:none;border:1px solid var(--gold-light);color:var(--gold-light);border-radius:10px;
   padding:3px 9px;font-size:10.5px;cursor:pointer;margin-left:4px;}
+
+/* ---- Layar Pilih Menu ---- */
+.mode-select{position:fixed;inset:0;background:var(--maroon-dark);z-index:99;display:flex;align-items:center;justify-content:center;}
+.mode-box{background:var(--white);border-radius:16px;padding:44px 40px;width:640px;max-width:92vw;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.3);}
+.mode-box h2{margin:0 0 6px;font-size:22px;color:var(--ink);}
+.mode-box p{margin:0 0 26px;font-size:13px;color:var(--gray);}
+.mode-cards{display:flex;gap:16px;}
+.mode-card{flex:1;border:2px solid var(--line);border-radius:12px;padding:26px 18px;cursor:pointer;transition:all .15s;}
+.mode-card:hover{border-color:var(--gold);background:var(--rowalt,#F5F2ED);transform:translateY(-2px);}
+.mode-card i{font-size:34px;color:var(--maroon);margin-bottom:10px;display:block;}
+.mode-card-title{font-weight:700;font-size:15px;color:var(--ink);margin-bottom:6px;}
+.mode-card-desc{font-size:12px;color:var(--gray);line-height:1.4;}
+
+/* ---- Modul Rencana Kerja Tahunan (RKT) ---- */
+.rkt-tabs{display:flex;gap:2px;background:var(--white);border-bottom:1px solid var(--line);padding:0 24px;}
+.rkt-tab{background:none;border:none;padding:14px 18px;font-size:13.5px;font-weight:600;color:var(--gray);cursor:pointer;
+  border-bottom:3px solid transparent;display:flex;align-items:center;gap:6px;}
+.rkt-tab.active{color:var(--maroon);border-bottom-color:var(--maroon);}
+.rkt-tab:hover{color:var(--maroon);}
+.rkt-body{padding:22px 28px;max-width:980px;margin:0 auto;}
+.rkt-panel-note{background:#F5F2ED;border-left:4px solid var(--gold);border-radius:8px;padding:12px 16px;
+  font-size:13px;color:var(--ink);margin-bottom:18px;line-height:1.5;}
+.rkt-lanjut-item{background:var(--white);border:1px solid var(--line);border-radius:10px;padding:14px 18px;margin-bottom:10px;}
+.rkt-lanjut-item .rkt-item-title{font-weight:600;font-size:13.5px;color:var(--ink);margin-bottom:2px;}
+.rkt-lanjut-item .rkt-item-meta{font-size:11.5px;color:var(--gray);margin-bottom:10px;}
+.rkt-indikator-asli{font-size:11.5px;color:var(--gray);background:#F5F2ED;border-radius:6px;padding:8px 10px;margin-bottom:10px;line-height:1.5;}
+.rkt-indikator-label{display:block;font-size:11.5px;font-weight:700;color:var(--ink);margin:8px 0 5px;}
+.rkt-indikator-label .opt{font-weight:400;font-style:italic;color:var(--gray);}
+.rkt-indikator-input{width:100%;border:1px solid var(--gold);border-radius:8px;padding:8px 10px;font-size:12.5px;
+  font-family:inherit;resize:vertical;color:var(--ink);margin-bottom:8px;background:#FFFBF2;}
+.rkt-toggle-group{display:flex;gap:8px;margin-bottom:8px;}
+.rkt-toggle-btn{border:1.5px solid var(--line);background:var(--white);border-radius:8px;padding:6px 16px;
+  font-size:12.5px;font-weight:600;cursor:pointer;color:var(--gray);}
+.rkt-toggle-btn.active-ya{border-color:#3B7A45;background:#3B7A45;color:#fff;}
+.rkt-toggle-btn.active-tidak{border-color:#B23A3A;background:#B23A3A;color:#fff;}
+.rkt-catatan-input{width:100%;border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-size:12.5px;
+  font-family:inherit;resize:vertical;color:var(--ink);}
+.rkt-cat-group-title{font-size:12px;font-weight:700;color:var(--gold-deep);text-transform:uppercase;letter-spacing:0.5px;
+  margin:20px 0 10px;padding-bottom:6px;border-bottom:1px solid var(--line);}
+.rkt-form{background:var(--white);border:1px solid var(--line);border-radius:12px;padding:20px 22px;margin-bottom:24px;}
+.rkt-form-row{margin-bottom:14px;}
+.rkt-form-row label{display:block;font-size:12px;font-weight:700;color:var(--ink);margin-bottom:5px;}
+.rkt-form-row input, .rkt-form-row select, .rkt-form-row textarea{
+  width:100%;border:1px solid var(--line);border-radius:8px;padding:9px 11px;font-size:13px;font-family:inherit;color:var(--ink);}
+.rkt-submit-btn{background:var(--maroon);color:#fff;border:none;border-radius:9px;padding:11px 20px;font-size:13.5px;
+  font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px;}
+.rkt-submit-btn:hover{background:var(--maroon-dark);}
+.rkt-submit-btn:disabled{opacity:0.6;}
+.rkt-form-msg{margin-top:10px;font-size:12.5px;}
+.rkt-form-msg.ok{color:#3B7A45;} .rkt-form-msg.err{color:#B23A3A;}
+.rkt-baru-list-title{font-size:13px;font-weight:700;color:var(--ink);margin-bottom:10px;}
+.rkt-baru-item{background:var(--white);border:1px solid var(--line);border-radius:10px;padding:14px 18px;margin-bottom:10px;
+  position:relative;}
+.rkt-baru-item .rkt-item-bidang{font-size:10.5px;font-weight:700;color:var(--gold-deep);text-transform:uppercase;margin-bottom:4px;}
+.rkt-baru-item .rkt-item-title{font-weight:700;font-size:14px;color:var(--ink);margin-bottom:4px;}
+.rkt-baru-item .rkt-item-detail{font-size:12px;color:var(--gray);line-height:1.6;}
+.rkt-baru-item .rkt-item-detail b{color:var(--ink);}
+.rkt-delete-btn{position:absolute;top:12px;right:14px;background:none;border:none;color:#B23A3A;cursor:pointer;font-size:16px;}
+.rkt-empty{text-align:center;padding:40px 20px;color:var(--gray);font-size:13px;}
 </style>
 </head>
 <body>
@@ -187,6 +251,25 @@ body{margin:0;font-family:Calibri,'Segoe UI',Arial,sans-serif;background:var(--w
     <div class="pin-hint">Belum punya PIN? Hubungi Tim Asistensi Paroki.</div>
   </div>
 </div>
+<div class="mode-select" id="modeSelect">
+  <div class="mode-box">
+    <h2>Pilih Menu</h2>
+    <p id="modeSelectSub">Paroki Raja Damai Tikala Manado</p>
+    <div class="mode-cards">
+      <div class="mode-card" id="pickMonev">
+        <i class="ti ti-clipboard-check"></i>
+        <div class="mode-card-title">Monev Live 2026</div>
+        <div class="mode-card-desc">Isi realisasi, capaian, dan risiko program kerja tahun berjalan.</div>
+      </div>
+      <div class="mode-card" id="pickRkt">
+        <i class="ti ti-notebook"></i>
+        <div class="mode-card-title">Usulan Rencana Kerja 2027</div>
+        <div class="mode-card-desc">Tentukan program 2026 mana yang dilanjutkan, dan usulkan program baru.</div>
+      </div>
+    </div>
+  </div>
+</div>
+<div id="monevAppWrap" style="display:none;">
 <div class="topbar">
   <div>
     <h1>Monev Live — Realisasi Program 2026</h1>
@@ -196,6 +279,7 @@ body{margin:0;font-family:Calibri,'Segoe UI',Arial,sans-serif;background:var(--w
     <div class="progress-pill" id="progressPill">0 / 0 item terisi</div>
     <div class="save-indicator" id="saveIndicator"><i class="ti ti-device-floppy"></i>Tersimpan di perangkat ini</div>
     <div class="sync-indicator sync-pending" id="syncIndicator"><i class="ti ti-cloud"></i>Memuat...</div>
+    <button class="pptx-btn" id="backToMenuBtn1" title="Kembali ke Menu"><i class="ti ti-arrow-left"></i>Menu</button>
     <button class="pptx-btn" id="logoutBtn" title="Keluar / Ganti PIN"><i class="ti ti-logout"></i></button>
     <button class="recap-btn" id="recapBtn"><i class="ti ti-report-analytics"></i>Rekapitulasi</button>
     <button class="pptx-btn" id="exportDetailBtn"><i class="ti ti-table"></i>Rekap Detail (88 Program)</button>
@@ -234,6 +318,94 @@ body{margin:0;font-family:Calibri,'Segoe UI',Arial,sans-serif;background:var(--w
     <div class="modal-hint"><i class="ti ti-info-circle"></i>Di presentasi: klik dulu sel baris <b>"1. Persekutuan..."</b> (baris data pertama, bukan judul kolom), baru tekan <b>Ctrl+V</b>.</div>
   </div>
 </div>
+</div><!-- /monevAppWrap -->
+
+<div id="rktAppWrap" style="display:none;">
+  <div class="topbar">
+    <div>
+      <h1>Usulan Rencana Kerja Tahunan 2027</h1>
+      <div class="sub" id="rktLoggedInAs">Paroki Raja Damai Tikala Manado</div>
+    </div>
+    <div class="right">
+      <div class="sync-indicator sync-pending" id="rktSyncIndicator"><i class="ti ti-cloud"></i>Memuat...</div>
+      <button class="pptx-btn" id="backToMenuBtn2" title="Kembali ke Menu"><i class="ti ti-arrow-left"></i>Menu</button>
+      <button class="pptx-btn" id="logoutBtn2" title="Keluar / Ganti PIN"><i class="ti ti-logout"></i></button>
+    </div>
+  </div>
+  <div class="rkt-tabs">
+    <button class="rkt-tab active" id="rktTabLanjutan" data-tab="lanjutan"><i class="ti ti-list-check"></i>Program 2026 — Dilanjutkan?</button>
+    <button class="rkt-tab" id="rktTabBaru" data-tab="baru"><i class="ti ti-plus"></i>Usulan Program Baru</button>
+    <button class="rkt-tab" id="rktTabStatistik" data-tab="statistik"><i class="ti ti-users"></i>Statistik Wilayah</button>
+  </div>
+  <div class="rkt-body">
+    <div id="rktPanelLanjutan" class="rkt-panel">
+      <div class="rkt-panel-note">Untuk setiap program kerja 2026 di kelompok Anda, tentukan apakah akan dilanjutkan pada Rencana Kerja 2027.</div>
+      <div id="rktLanjutanList"></div>
+    </div>
+    <div id="rktPanelBaru" class="rkt-panel" style="display:none;">
+      <div class="rkt-panel-note">Usulkan program baru untuk 2027. Pilih Bidang Strategis dan Program Strategis (dari 88 kategori Renstra Keuskupan) yang paling sesuai.</div>
+      <div class="rkt-form">
+        <div class="rkt-form-row">
+          <label>Bidang Strategis</label>
+          <select id="rktBidangSelect"><option value="">— Pilih Bidang —</option></select>
+        </div>
+        <div class="rkt-form-row">
+          <label>Program Strategis (Renstra Keuskupan)</label>
+          <select id="rktProgramStrategisSelect"><option value="">— Pilih Bidang dahulu —</option></select>
+        </div>
+        <div class="rkt-form-row">
+          <label>Nama Program Kerja Baru</label>
+          <input type="text" id="rktNamaProgram" placeholder="Contoh: Rekoleksi Pengurus Wilayah Rohani">
+        </div>
+        <div class="rkt-form-row">
+          <label>Sasaran</label>
+          <input type="text" id="rktSasaran" placeholder="Contoh: Pengurus WR, Ketua Stasi">
+        </div>
+        <div class="rkt-form-row">
+          <label>Indikator Pencapaian</label>
+          <textarea id="rktIndikator" rows="2" placeholder="Contoh: 80% pengurus mengikuti kegiatan, dinilai melalui evaluasi sederhana"></textarea>
+        </div>
+        <div class="rkt-form-row">
+          <label>Waktu / Bulan Pelaksanaan</label>
+          <input type="text" id="rktWaktu" placeholder="Contoh: Maret 2027">
+        </div>
+        <button class="rkt-submit-btn" id="rktSubmitBaru"><i class="ti ti-plus"></i>Tambahkan Usulan</button>
+        <div class="rkt-form-msg" id="rktFormMsg"></div>
+      </div>
+      <div class="rkt-baru-list-title">Usulan yang sudah ditambahkan</div>
+      <div id="rktBaruList"></div>
+    </div>
+    <div id="rktPanelStatistik" class="rkt-panel" style="display:none;">
+      <div class="rkt-panel-note" id="rktStatistikNote">Isi jumlah keluarga dan jiwa di kelompok Anda. Angka perkiraan yang sudah Bapak/Ibu ketahui saja, tidak perlu sensus lengkap.</div>
+      <div class="rkt-form" id="rktStatistikForm">
+        <div class="rkt-form-row" id="rowJumlahKeluarga">
+          <label>Jumlah Keluarga (KK)</label>
+          <input type="number" id="rktJumlahKeluarga" min="0" placeholder="Contoh: 42">
+        </div>
+        <div class="rkt-form-row" id="rowJumlahJiwa">
+          <label>Jumlah Jiwa</label>
+          <input type="number" id="rktJumlahJiwa" min="0" placeholder="Contoh: 138">
+        </div>
+        <div class="rkt-form-row" id="rowJumlahLaki">
+          <label>Jumlah Laki-laki</label>
+          <input type="number" id="rktJumlahLaki" min="0" placeholder="Contoh: 68">
+        </div>
+        <div class="rkt-form-row" id="rowJumlahPerempuan">
+          <label>Jumlah Perempuan</label>
+          <input type="number" id="rktJumlahPerempuan" min="0" placeholder="Contoh: 70">
+        </div>
+        <div class="rkt-form-row" id="rowJumlahAnggota" style="display:none;">
+          <label>Jumlah Anggota</label>
+          <input type="number" id="rktJumlahAnggota" min="0" placeholder="Contoh: 25">
+        </div>
+        <button class="rkt-submit-btn" id="rktSubmitStatistik"><i class="ti ti-device-floppy"></i>Simpan Statistik</button>
+        <div class="rkt-form-msg" id="rktStatistikMsg"></div>
+      </div>
+      <div id="rktStatistikAdminTable"></div>
+    </div>
+  </div>
+</div><!-- /rktAppWrap -->
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script>
 <script>
 // pptxgenjs bundle embedded inline for reliability
@@ -344,7 +516,7 @@ const TEMPLATE_B64 = "UEsDBBQACAgIAI92E10AAAAAAAAAAAAAAAAaAAAAeGwvX3JlbHMvd29ya2
 // KONFIGURASI — GANTI BARIS INI SETELAH DEPLOY GOOGLE APPS SCRIPT
 // ============================================================
 const CONFIG = {
-  API_URL: "https://script.google.com/macros/s/AKfycbwF2Q1zjMeATXPaDfTDwy9gGWDoPkdJ-lQiX-0Rhe7tQz_NJjZzqEeoEaozsW0QVz8/exec", // contoh: https://script.google.com/macros/s/AKfycbx.../exec
+  API_URL: "https://script.google.com/macros/s/AKfycbyJ9kAs-g2JRdTZ-tuemUZa6CrU5wQq1EHdtIJxvwCIVUIWPyk1CjdlFIrQ7C6-EKrJ/exec", // contoh: https://script.google.com/macros/s/AKfycbx.../exec
 };
 // ============================================================
 
@@ -452,7 +624,7 @@ async function handlePinSubmit(){
 
   if(!apiConfigured()){
     errEl.textContent = 'Server belum terhubung (mode uji coba) — melanjutkan tanpa PIN.';
-    setTimeout(function(){ enterApp(null, 'Mode Uji Coba'); }, 900);
+    setTimeout(function(){ showModeSelect(null, 'Mode Uji Coba'); }, 900);
     return;
   }
   if(pin.length !== 4){
@@ -465,7 +637,7 @@ async function handlePinSubmit(){
     if(result.ok && result.valid){
       sessionStorage.setItem('monev_pin', pin);
       sessionStorage.setItem('monev_kategori_pengisi', result.kategori);
-      enterApp(pin, result.kategori);
+      showModeSelect(pin, result.kategori);
     }else{
       errEl.textContent = 'PIN tidak dikenali. Coba lagi atau hubungi Tim Asistensi.';
       btn.disabled = false; btn.textContent = 'Masuk';
@@ -476,13 +648,27 @@ async function handlePinSubmit(){
   }
 }
 
-function enterApp(pin, kategoriPengisi){
+function showModeSelect(pin, kategoriPengisi){
   currentPin = pin;
   currentKategoriPengisi = kategoriPengisi;
-  document.getElementById('pinGate').style.display = 'none';
-
-  const isAdmin = !kategoriPengisi || kategoriPengisi === ADMIN_KATEGORI || kategoriPengisi === 'Mode Uji Coba';
+  const kpNormalized = String(kategoriPengisi || '').trim().toUpperCase();
+  const isAdmin = !kategoriPengisi || kpNormalized.indexOf('ADMIN') === 0 || kategoriPengisi === 'Mode Uji Coba';
   restrictedKategori = isAdmin ? null : kategoriPengisi;
+
+  document.getElementById('pinGate').style.display = 'none';
+  document.getElementById('monevAppWrap').style.display = 'none';
+  document.getElementById('rktAppWrap').style.display = 'none';
+  document.getElementById('modeSelect').style.display = 'flex';
+  const sub = document.getElementById('modeSelectSub');
+  if(sub) sub.innerHTML = kategoriPengisi ? 'Masuk sebagai: <b>' + escapeHtml(kategoriPengisi) + '</b>' : 'Paroki Raja Damai Tikala Manado';
+}
+
+function enterApp(){
+  document.getElementById('modeSelect').style.display = 'none';
+  document.getElementById('monevAppWrap').style.display = '';
+  const pin = currentPin, kategoriPengisi = currentKategoriPengisi;
+  const kpNormalized = String(kategoriPengisi || '').trim().toUpperCase();
+  const isAdmin = !kategoriPengisi || kpNormalized.indexOf('ADMIN') === 0 || kategoriPengisi === 'Mode Uji Coba';
 
   const loggedInEl = document.getElementById('loggedInAs');
   if(loggedInEl && kategoriPengisi){
@@ -499,6 +685,24 @@ function enterApp(pin, kategoriPengisi){
   });
   checkStorageHealth();
 }
+
+document.getElementById('pickMonev').addEventListener('click', enterApp);
+document.getElementById('pickRkt').addEventListener('click', enterRktApp);
+document.getElementById('backToMenuBtn1').addEventListener('click', function(){
+  document.getElementById('monevAppWrap').style.display = 'none';
+  document.getElementById('modeSelect').style.display = 'flex';
+});
+document.getElementById('backToMenuBtn2').addEventListener('click', function(){
+  document.getElementById('rktAppWrap').style.display = 'none';
+  document.getElementById('modeSelect').style.display = 'flex';
+});
+document.getElementById('logoutBtn2').addEventListener('click', function(){
+  if(confirm('Keluar dan ganti PIN? Data yang sudah tersimpan tidak akan hilang.')){
+    sessionStorage.removeItem('monev_pin');
+    sessionStorage.removeItem('monev_kategori_pengisi');
+    location.reload();
+  }
+});
 
 document.getElementById('logoutBtn').addEventListener('click', function(){
   if(confirm('Keluar dan ganti PIN? Data yang sudah tersimpan tidak akan hilang.')){
@@ -517,7 +721,7 @@ document.getElementById('pinInput').addEventListener('keydown', function(e){ if(
   const savedKategori = sessionStorage.getItem('monev_kategori_pengisi');
   if(savedPin || savedKategori){
     document.getElementById('pinGate').style.display = 'none';
-    enterApp(savedPin, savedKategori);
+    showModeSelect(savedPin, savedKategori);
   }
 })();
 
@@ -625,8 +829,7 @@ function renderCatList(){
   list.innerHTML = '';
   const term = searchTerm.trim().toLowerCase();
   const grouped = {};
-  const visibleCategories = restrictedKategori ? categories.filter(function(c){ return c === restrictedKategori; }) : categories;
-  visibleCategories.forEach(function(cat){
+  categories.forEach(function(cat){
     if(term && cat.toLowerCase().indexOf(term) === -1) return;
     const g = groupType(cat);
     if(!grouped[g]) grouped[g] = [];
@@ -644,11 +847,13 @@ function renderCatList(){
       const sk = catSkippedCount(cat);
       const mit = catMitigasiCount(cat);
       const activeN = n - sk;
+      const isLocked = restrictedKategori && cat !== restrictedKategori;
       const row = document.createElement('div');
-      row.className = 'cat-item' + (cat === activeCat ? ' active' : '');
+      row.className = 'cat-item' + (cat === activeCat ? ' active' : '') + (isLocked ? ' locked' : '');
       const countLabel = sk > 0 ? (activeN + '<span class="badge-of">/' + n + '</span>') : String(n);
-      row.innerHTML = '<span class="name">' + escapeHtml(cat) + '</span>' +
-        '<span class="cat-badges">' + (f > 0 ? '<span class="badge-filled">' + f + '</span>' : '') +
+      const doneBadge = isLocked ? (f >= n ? '<span class="badge-done-check" title="Sudah lengkap diisi">✓</span>' : (f > 0 ? '<span class="badge-done-partial" title="Sebagian sudah diisi">' + f + '/' + n + '</span>' : '<span class="badge-done-none" title="Belum diisi">belum diisi</span>')) : '';
+      row.innerHTML = '<span class="name">' + (isLocked ? '<i class="ti ti-lock" style="font-size:11px;margin-right:4px;opacity:0.6;"></i>' : '') + escapeHtml(cat) + '</span>' +
+        '<span class="cat-badges">' + doneBadge + (f > 0 ? '<span class="badge-filled">' + f + '</span>' : '') +
         (mit > 0 ? '<span class="badge-mit-cat" title="' + mit + ' program perlu mitigasi">' + mit + ' ⚠</span>' : '') +
         (sk > 0 ? '<span class="badge-skip" title="' + sk + ' program dilewati">' + sk + ' dilewati</span>' : '') +
         '<span class="badge-count">' + countLabel + '</span></span>';
@@ -1526,4 +1731,373 @@ async function exportRekapDetail(){
 document.getElementById('exportDetailBtn').addEventListener('click', exportRekapDetail);
 
 // Catatan: loadAllFilled() & checkStorageHealth() dipanggil dari enterApp() setelah PIN benar
+
+// ============================================================
+// MODUL RENCANA KERJA TAHUNAN (RKT) 2027
+// ============================================================
+let rktLanjutanData = {};
+let rktBaruData = [];
+const rktPendingSync = {};
+
+function rktIsAdmin(){
+  const kp = String(currentKategoriPengisi || '').trim().toUpperCase();
+  return !currentKategoriPengisi || kp.indexOf('ADMIN') === 0 || currentKategoriPengisi === 'Mode Uji Coba';
+}
+
+async function enterRktApp(){
+  document.getElementById('modeSelect').style.display = 'none';
+  document.getElementById('rktAppWrap').style.display = '';
+  const rktLoggedInEl = document.getElementById('rktLoggedInAs');
+  if(rktLoggedInEl && currentKategoriPengisi){
+    rktLoggedInEl.innerHTML = 'Masuk sebagai: <b>' + escapeHtml(currentKategoriPengisi) + '</b>' + (rktIsAdmin() ? ' <span style="opacity:0.7;">(akses penuh)</span>' : '');
+  }
+  populateRktBidangSelect();
+  await rktLoadAll();
+  renderRktLanjutan();
+  renderRktBaru();
+}
+
+function rktSetSync(state, text){
+  const el = document.getElementById('rktSyncIndicator');
+  if(!el) return;
+  el.className = 'sync-indicator sync-' + state;
+  const icon = state === 'ok' ? 'ti-cloud-check' : state === 'error' ? 'ti-cloud-off' : 'ti-cloud';
+  el.innerHTML = '<i class="ti ' + icon + '"></i>' + text;
+}
+
+let rktStatistikData = {};
+
+async function rktLoadAll(){
+  if(!apiConfigured()){
+    rktSetSync('error', 'Mode uji coba (server belum diatur)');
+    return;
+  }
+  rktSetSync('pending', 'Memuat...');
+  try{
+    const [lanjutRes, baruRes, statistikRes] = await Promise.all([
+      apiGet({ action: 'getRktLanjutan' }),
+      apiGet({ action: 'getRktBaru' }),
+      apiGet({ action: 'getRktStatistik' }),
+    ]);
+    if(lanjutRes.ok) rktLanjutanData = lanjutRes.data || {};
+    if(baruRes.ok) rktBaruData = baruRes.data || [];
+    if(statistikRes.ok) rktStatistikData = statistikRes.data || {};
+    rktSetSync('ok', 'Tersambung ke server');
+  }catch(e){
+    rktSetSync('error', 'Tidak terhubung ke server');
+  }
+}
+
+// ---------------- TAB SWITCHING ----------------
+document.getElementById('rktTabLanjutan').addEventListener('click', function(){ rktSwitchTab('lanjutan'); });
+document.getElementById('rktTabBaru').addEventListener('click', function(){ rktSwitchTab('baru'); });
+document.getElementById('rktTabStatistik').addEventListener('click', function(){ rktSwitchTab('statistik'); renderRktStatistik(); });
+function rktSwitchTab(tab){
+  document.getElementById('rktTabLanjutan').classList.toggle('active', tab === 'lanjutan');
+  document.getElementById('rktTabBaru').classList.toggle('active', tab === 'baru');
+  document.getElementById('rktTabStatistik').classList.toggle('active', tab === 'statistik');
+  document.getElementById('rktPanelLanjutan').style.display = tab === 'lanjutan' ? '' : 'none';
+  document.getElementById('rktPanelBaru').style.display = tab === 'baru' ? '' : 'none';
+  document.getElementById('rktPanelStatistik').style.display = tab === 'statistik' ? '' : 'none';
+}
+
+// ---------------- TAB 1: PROGRAM 2026 - LANJUTAN? ----------------
+function renderRktLanjutan(){
+  const wrap = document.getElementById('rktLanjutanList');
+  const items = DATA.filter(function(it){ return rktIsAdmin() || it.c === restrictedKategori; });
+  if(items.length === 0){
+    wrap.innerHTML = '<div class="rkt-empty">Tidak ada program 2026 untuk kelompok ini.</div>';
+    return;
+  }
+  // kelompokkan per kategori (kelompok basis) supaya rapi untuk admin (yang lihat semua)
+  const byCat = {};
+  items.forEach(function(it){
+    if(!byCat[it.c]) byCat[it.c] = [];
+    byCat[it.c].push(it);
+  });
+  let html = '';
+  Object.keys(byCat).sort().forEach(function(cat){
+    if(rktIsAdmin()) html += '<div class="rkt-cat-group-title">' + escapeHtml(cat) + '</div>';
+    byCat[cat].forEach(function(it){
+      const d = rktLanjutanData[it.n] || {};
+      const lanjut = d.Lanjut2027;
+      html += '<div class="rkt-lanjut-item" data-no="' + it.n + '">' +
+        '<div class="rkt-item-title">' + escapeHtml(it.p) + '</div>' +
+        '<div class="rkt-item-meta">' + escapeHtml(it.n) + ' &middot; Sasaran: ' + escapeHtml(it.s || '-') + '</div>' +
+        '<div class="rkt-indikator-asli"><b>Indikator 2026 (acuan lama):</b> ' + escapeHtml(it.i || '-') + '</div>' +
+        '<div class="rkt-toggle-group">' +
+          '<button class="rkt-toggle-btn' + (lanjut === 'Ya' ? ' active-ya' : '') + '" data-val="Ya">Ya, dilanjutkan</button>' +
+          '<button class="rkt-toggle-btn' + (lanjut === 'Tidak' ? ' active-tidak' : '') + '" data-val="Tidak">Tidak dilanjutkan</button>' +
+        '</div>' +
+        '<label class="rkt-indikator-label">Usulan indikator pencapaian 2027 <span class="opt">(boleh disesuaikan supaya lebih realistis untuk kelompok Anda)</span></label>' +
+        '<textarea class="rkt-indikator-input" placeholder="Contoh: minimal 15 orang hadir, dicatat lewat daftar hadir" rows="2">' + escapeHtml(d.IndikatorRevisi || '') + '</textarea>' +
+        '<textarea class="rkt-catatan-input" placeholder="Catatan lain (opsional)" rows="1">' + escapeHtml(d.Catatan || '') + '</textarea>' +
+      '</div>';
+    });
+  });
+  wrap.innerHTML = html;
+
+  wrap.querySelectorAll('.rkt-toggle-btn').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      const item = btn.closest('.rkt-lanjut-item');
+      const no = item.getAttribute('data-no');
+      const val = btn.getAttribute('data-val');
+      const current = rktLanjutanData[no] || {};
+      const newVal = current.Lanjut2027 === val ? '' : val; // klik lagi untuk batal pilih
+      item.querySelectorAll('.rkt-toggle-btn').forEach(function(b){ b.classList.remove('active-ya', 'active-tidak'); });
+      if(newVal === 'Ya') btn.classList.add('active-ya');
+      if(newVal === 'Tidak') btn.classList.add('active-tidak');
+      rktLanjutanData[no] = { Lanjut2027: newVal, Catatan: current.Catatan || '', IndikatorRevisi: current.IndikatorRevisi || '' };
+      rktSaveLanjutan(no);
+    });
+  });
+  wrap.querySelectorAll('.rkt-catatan-input').forEach(function(ta){
+    let timer;
+    ta.addEventListener('input', function(){
+      const item = ta.closest('.rkt-lanjut-item');
+      const no = item.getAttribute('data-no');
+      const current = rktLanjutanData[no] || {};
+      rktLanjutanData[no] = { Lanjut2027: current.Lanjut2027 || '', Catatan: ta.value, IndikatorRevisi: current.IndikatorRevisi || '' };
+      clearTimeout(timer);
+      timer = setTimeout(function(){ rktSaveLanjutan(no); }, 500);
+    });
+  });
+  wrap.querySelectorAll('.rkt-indikator-input').forEach(function(ta){
+    let timer;
+    ta.addEventListener('input', function(){
+      const item = ta.closest('.rkt-lanjut-item');
+      const no = item.getAttribute('data-no');
+      const current = rktLanjutanData[no] || {};
+      rktLanjutanData[no] = { Lanjut2027: current.Lanjut2027 || '', Catatan: current.Catatan || '', IndikatorRevisi: ta.value };
+      clearTimeout(timer);
+      timer = setTimeout(function(){ rktSaveLanjutan(no); }, 500);
+    });
+  });
+}
+
+async function rktSaveLanjutan(no){
+  if(!apiConfigured()) return;
+  rktSetSync('pending', 'Menyimpan...');
+  const d = rktLanjutanData[no] || {};
+  try{
+    const res = await apiPost({ action: 'saveRktLanjutan', no: no, lanjut: d.Lanjut2027 || '', catatan: d.Catatan || '', indikatorRevisi: d.IndikatorRevisi || '', pin: currentPin || '' });
+    if(res && res.ok){
+      delete rktPendingSync[no];
+      rktSetSync(Object.keys(rktPendingSync).length ? 'error' : 'ok', Object.keys(rktPendingSync).length ? (Object.keys(rktPendingSync).length + ' belum tersinkron') : 'Tersambung ke server');
+    }else{
+      rktPendingSync[no] = true;
+      rktSetSync('error', Object.keys(rktPendingSync).length + ' item belum tersinkron');
+    }
+  }catch(e){
+    rktPendingSync[no] = true;
+    rktSetSync('error', Object.keys(rktPendingSync).length + ' item belum tersinkron');
+  }
+}
+
+// ---------------- TAB 2: USULAN PROGRAM BARU ----------------
+function populateRktBidangSelect(){
+  const sel = document.getElementById('rktBidangSelect');
+  const secs = [];
+  CATEGORIES.forEach(function(c){ if(secs.indexOf(c.sec) === -1) secs.push(c.sec); });
+  sel.innerHTML = '<option value="">— Pilih Bidang —</option>' +
+    secs.map(function(s){ return '<option value="' + escapeHtml(s) + '">' + escapeHtml(s) + '</option>'; }).join('');
+}
+document.getElementById('rktBidangSelect').addEventListener('change', function(){
+  const sec = this.value;
+  const progSel = document.getElementById('rktProgramStrategisSelect');
+  if(!sec){
+    progSel.innerHTML = '<option value="">— Pilih Bidang dahulu —</option>';
+    return;
+  }
+  const list = CATEGORIES.filter(function(c){ return c.sec === sec; });
+  progSel.innerHTML = '<option value="">— Pilih Program Strategis —</option>' +
+    list.map(function(c){ return '<option value="' + c.num + '">' + c.num + '. ' + escapeHtml(c.title) + '</option>'; }).join('');
+});
+
+document.getElementById('rktSubmitBaru').addEventListener('click', async function(){
+  const bidang = document.getElementById('rktBidangSelect').value;
+  const progSelEl = document.getElementById('rktProgramStrategisSelect');
+  const progNum = progSelEl.value;
+  const progTitle = progNum ? progSelEl.options[progSelEl.selectedIndex].text : '';
+  const nama = document.getElementById('rktNamaProgram').value.trim();
+  const sasaran = document.getElementById('rktSasaran').value.trim();
+  const indikator = document.getElementById('rktIndikator').value.trim();
+  const waktu = document.getElementById('rktWaktu').value.trim();
+  const msgEl = document.getElementById('rktFormMsg');
+  msgEl.textContent = '';
+  msgEl.className = 'rkt-form-msg';
+
+  if(!bidang || !progNum || !nama || !indikator){
+    msgEl.textContent = 'Mohon lengkapi minimal: Bidang, Program Strategis, Nama Program, dan Indikator Pencapaian.';
+    msgEl.classList.add('err');
+    return;
+  }
+  if(!apiConfigured()){
+    msgEl.textContent = 'Server belum terhubung (mode uji coba) — usulan tidak dapat disimpan.';
+    msgEl.classList.add('err');
+    return;
+  }
+  const btn = document.getElementById('rktSubmitBaru');
+  btn.disabled = true;
+  try{
+    const res = await apiPost({
+      action: 'addRktBaru', bidang: bidang, noProgramStrategis: progNum, namaProgramStrategis: progTitle,
+      namaProgramBaru: nama, sasaran: sasaran, indikator: indikator, waktu: waktu, pin: currentPin || '',
+    });
+    if(res && res.ok){
+      msgEl.textContent = 'Usulan berhasil ditambahkan.';
+      msgEl.classList.add('ok');
+      document.getElementById('rktNamaProgram').value = '';
+      document.getElementById('rktSasaran').value = '';
+      document.getElementById('rktIndikator').value = '';
+      document.getElementById('rktWaktu').value = '';
+      document.getElementById('rktBidangSelect').value = '';
+      progSelEl.innerHTML = '<option value="">— Pilih Bidang dahulu —</option>';
+      await rktLoadAll();
+      renderRktBaru();
+    }else{
+      msgEl.textContent = 'Gagal menyimpan: ' + (res && res.error ? res.error : 'kesalahan tidak diketahui');
+      msgEl.classList.add('err');
+    }
+  }catch(e){
+    msgEl.textContent = 'Gagal terhubung ke server.';
+    msgEl.classList.add('err');
+  }finally{
+    btn.disabled = false;
+  }
+});
+
+function renderRktBaru(){
+  const wrap = document.getElementById('rktBaruList');
+  const items = rktBaruData.filter(function(it){ return rktIsAdmin() || it.Kategori === restrictedKategori; });
+  if(items.length === 0){
+    wrap.innerHTML = '<div class="rkt-empty">Belum ada usulan program baru.</div>';
+    return;
+  }
+  wrap.innerHTML = items.map(function(it){
+    return '<div class="rkt-baru-item" data-id="' + escapeHtml(it.ID) + '">' +
+      '<button class="rkt-delete-btn" title="Hapus"><i class="ti ti-trash"></i></button>' +
+      '<div class="rkt-item-bidang">' + escapeHtml(it.Bidang || '') + ' &middot; Program Strategis ' + escapeHtml(it.NoProgramStrategis || '') + '</div>' +
+      '<div class="rkt-item-title">' + escapeHtml(it.NamaProgramBaru || '') + '</div>' +
+      '<div class="rkt-item-detail">' +
+        '<b>Kategori pengusul:</b> ' + escapeHtml(it.Kategori || '') + '<br>' +
+        '<b>Sasaran:</b> ' + escapeHtml(it.Sasaran || '-') + '<br>' +
+        '<b>Indikator:</b> ' + escapeHtml(it.Indikator || '-') + '<br>' +
+        '<b>Waktu:</b> ' + escapeHtml(it.Waktu || '-') +
+      '</div>' +
+    '</div>';
+  }).join('');
+
+  wrap.querySelectorAll('.rkt-delete-btn').forEach(function(btn){
+    btn.addEventListener('click', async function(){
+      if(!confirm('Hapus usulan ini?')) return;
+      const id = btn.closest('.rkt-baru-item').getAttribute('data-id');
+      try{
+        const res = await apiPost({ action: 'deleteRktBaru', id: id, pin: currentPin || '' });
+        if(res && res.ok){
+          await rktLoadAll();
+          renderRktBaru();
+        }else{
+          alert('Gagal menghapus: ' + (res && res.error ? res.error : 'kesalahan tidak diketahui'));
+        }
+      }catch(e){
+        alert('Gagal terhubung ke server.');
+      }
+    });
+  });
+}
+
+// ---------------- TAB 3: STATISTIK WILAYAH ----------------
+const TERRITORIAL_TYPES = ['Wilayah Rohani', 'Stasi'];
+function rktIsTerritorial(kategori){
+  return TERRITORIAL_TYPES.indexOf(groupType(kategori)) !== -1;
+}
+
+function renderRktStatistik(){
+  const isAdmin = rktIsAdmin();
+  const formEl = document.getElementById('rktStatistikForm');
+  const noteEl = document.getElementById('rktStatistikNote');
+  const adminTableEl = document.getElementById('rktStatistikAdminTable');
+
+  if(isAdmin){
+    // Admin tidak mengisi untuk dirinya sendiri — tampilkan rekap semua kelompok
+    formEl.style.display = 'none';
+    noteEl.textContent = 'Rekap statistik yang sudah diisi oleh tiap kelompok basis.';
+    const kategoris = Object.keys(rktStatistikData).sort();
+    if(kategoris.length === 0){
+      adminTableEl.innerHTML = '<div class="rkt-empty">Belum ada kelompok yang mengisi statistik.</div>';
+      return;
+    }
+    let totalKK = 0, totalJiwa = 0, totalL = 0, totalP = 0, totalAnggota = 0;
+    let rows = kategoris.map(function(k){
+      const d = rktStatistikData[k] || {};
+      const territorial = rktIsTerritorial(k);
+      totalKK += Number(d.JumlahKeluarga || 0);
+      totalJiwa += Number(d.JumlahJiwa || 0);
+      totalL += Number(d.JumlahLaki || 0);
+      totalP += Number(d.JumlahPerempuan || 0);
+      totalAnggota += Number(d.JumlahAnggota || 0);
+      const isian = territorial
+        ? '<td style="text-align:center;">' + (d.JumlahKeluarga || '-') + '</td><td style="text-align:center;">' + (d.JumlahJiwa || '-') + '</td><td style="text-align:center;">' + (d.JumlahLaki || '-') + '</td><td style="text-align:center;">' + (d.JumlahPerempuan || '-') + '</td><td style="text-align:center;color:var(--gray);">—</td>'
+        : '<td style="text-align:center;color:var(--gray);">—</td><td style="text-align:center;color:var(--gray);">—</td><td style="text-align:center;color:var(--gray);">—</td><td style="text-align:center;color:var(--gray);">—</td><td style="text-align:center;">' + (d.JumlahAnggota || '-') + '</td>';
+      return '<tr><td>' + escapeHtml(k) + '</td>' + isian + '</tr>';
+    }).join('');
+    adminTableEl.innerHTML = '<table style="width:100%;border-collapse:collapse;font-size:12.5px;">' +
+      '<thead><tr style="background:var(--maroon);color:#fff;"><th style="padding:8px;text-align:left;">Kelompok</th><th style="padding:8px;">KK</th><th style="padding:8px;">Jiwa</th><th style="padding:8px;">Laki-laki</th><th style="padding:8px;">Perempuan</th><th style="padding:8px;">Anggota (Kategorial)</th></tr></thead>' +
+      '<tbody>' + rows + '</tbody>' +
+      '<tfoot><tr style="font-weight:700;background:var(--rowalt);"><td style="padding:8px;">TOTAL</td><td style="padding:8px;text-align:center;">' + totalKK + '</td><td style="padding:8px;text-align:center;">' + totalJiwa + '</td><td style="padding:8px;text-align:center;">' + totalL + '</td><td style="padding:8px;text-align:center;">' + totalP + '</td><td style="padding:8px;text-align:center;">' + totalAnggota + '</td></tr></tfoot>' +
+      '</table>';
+  }else{
+    formEl.style.display = '';
+    adminTableEl.innerHTML = '';
+    const territorial = rktIsTerritorial(restrictedKategori);
+    ['rowJumlahKeluarga', 'rowJumlahJiwa', 'rowJumlahLaki', 'rowJumlahPerempuan'].forEach(function(id){
+      document.getElementById(id).style.display = territorial ? '' : 'none';
+    });
+    document.getElementById('rowJumlahAnggota').style.display = territorial ? 'none' : '';
+    noteEl.textContent = territorial
+      ? 'Isi jumlah keluarga dan jiwa di kelompok Anda. Angka perkiraan yang sudah Bapak/Ibu ketahui saja, tidak perlu sensus lengkap.'
+      : 'Isi jumlah anggota kelompok kategorial ini. Angka perkiraan saja, tidak perlu daftar nama lengkap.';
+    const existing = rktStatistikData[restrictedKategori] || {};
+    document.getElementById('rktJumlahKeluarga').value = existing.JumlahKeluarga || '';
+    document.getElementById('rktJumlahJiwa').value = existing.JumlahJiwa || '';
+    document.getElementById('rktJumlahLaki').value = existing.JumlahLaki || '';
+    document.getElementById('rktJumlahPerempuan').value = existing.JumlahPerempuan || '';
+    document.getElementById('rktJumlahAnggota').value = existing.JumlahAnggota || '';
+  }
+}
+
+document.getElementById('rktSubmitStatistik').addEventListener('click', async function(){
+  const msgEl = document.getElementById('rktStatistikMsg');
+  msgEl.className = 'rkt-form-msg'; msgEl.textContent = '';
+
+  const territorial = rktIsTerritorial(restrictedKategori);
+  const jumlahKeluarga = territorial ? document.getElementById('rktJumlahKeluarga').value : '';
+  const jumlahJiwa = territorial ? document.getElementById('rktJumlahJiwa').value : '';
+  const jumlahLaki = territorial ? document.getElementById('rktJumlahLaki').value : '';
+  const jumlahPerempuan = territorial ? document.getElementById('rktJumlahPerempuan').value : '';
+  const jumlahAnggota = territorial ? '' : document.getElementById('rktJumlahAnggota').value;
+
+  if(!apiConfigured()){
+    msgEl.textContent = 'Server belum terhubung (mode uji coba).'; msgEl.classList.add('err'); return;
+  }
+  const btn = document.getElementById('rktSubmitStatistik');
+  btn.disabled = true;
+  try{
+    const res = await apiPost({
+      action: 'saveRktStatistik', jumlahKeluarga: jumlahKeluarga, jumlahJiwa: jumlahJiwa,
+      jumlahLaki: jumlahLaki, jumlahPerempuan: jumlahPerempuan, jumlahAnggota: jumlahAnggota, pin: currentPin || '',
+    });
+    if(res && res.ok){
+      msgEl.textContent = 'Statistik berhasil disimpan.'; msgEl.classList.add('ok');
+      rktStatistikData[restrictedKategori] = { JumlahKeluarga: jumlahKeluarga, JumlahJiwa: jumlahJiwa, JumlahLaki: jumlahLaki, JumlahPerempuan: jumlahPerempuan, JumlahAnggota: jumlahAnggota };
+    }else{
+      msgEl.textContent = 'Gagal menyimpan: ' + (res && res.error ? res.error : 'kesalahan tidak diketahui'); msgEl.classList.add('err');
+    }
+  }catch(e){
+    msgEl.textContent = 'Gagal terhubung ke server.'; msgEl.classList.add('err');
+  }finally{
+    btn.disabled = false;
+  }
+});
 </script>

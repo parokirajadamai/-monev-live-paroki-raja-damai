@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pendataan Keluarga — Paroki Raja Damai</title>
+<style>
+:root{
+  --maroon:#7A2331; --maroon-dark:#5A1A24; --gold:#B8935A; --gold-deep:#8A6529; --gold-light:#E8DCC4;
+  --ink:#1F1F1F; --gray:#5A5A5A; --line:#D8D2C6; --rowalt:#F5F2ED; --white:#FFFFFF; --danger:#B23A3A; --ok:#3B7A45;
+}
+*{box-sizing:border-box;}
+body{margin:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;background:var(--rowalt);color:var(--ink);}
+.header{background:var(--maroon-dark);color:#fff;padding:28px 20px 24px;text-align:center;}
+.header h1{margin:0 0 6px;font-size:19px;font-weight:700;}
+.header p{margin:0;font-size:12.5px;color:var(--gold-light);line-height:1.6;max-width:520px;margin:0 auto;}
+.container{max-width:640px;margin:0 auto;padding:18px 16px 60px;}
+.card{background:#fff;border-radius:14px;padding:20px 18px;margin-bottom:16px;box-shadow:0 1px 3px rgba(0,0,0,0.06);}
+.card-title{font-size:15px;font-weight:700;color:var(--maroon);margin:0 0 4px;display:flex;align-items:center;gap:8px;}
+.card-sub{font-size:12px;color:var(--gray);margin:0 0 16px;line-height:1.5;}
+.field{margin-bottom:14px;}
+.field label{display:block;font-size:12.5px;font-weight:700;color:var(--ink);margin-bottom:5px;}
+.field label .req{color:var(--danger);}
+.field label .opt{color:var(--gray);font-weight:400;font-style:italic;}
+.field input[type=text], .field input[type=tel], .field input[type=date], .field select, .field textarea{
+  width:100%;border:1.5px solid var(--line);border-radius:9px;padding:10px 12px;font-size:14px;font-family:inherit;color:var(--ink);}
+.field input:focus, .field select:focus, .field textarea:focus{outline:none;border-color:var(--gold);}
+.field-hint{font-size:11px;color:var(--gray);margin-top:4px;}
+.checkbox-group{display:flex;flex-wrap:wrap;gap:8px;}
+.checkbox-chip{border:1.5px solid var(--line);border-radius:20px;padding:7px 14px;font-size:12.5px;cursor:pointer;
+  display:flex;align-items:center;gap:6px;user-select:none;color:var(--gray);}
+.checkbox-chip.checked{border-color:var(--maroon);background:var(--maroon);color:#fff;}
+.anggota-card{background:var(--rowalt);border:1px solid var(--line);border-radius:10px;padding:14px;margin-bottom:12px;position:relative;}
+.anggota-card .anggota-num{font-size:11px;font-weight:700;color:var(--gold-deep);text-transform:uppercase;margin-bottom:10px;}
+.anggota-remove{position:absolute;top:12px;right:12px;background:none;border:none;color:var(--danger);cursor:pointer;font-size:13px;font-weight:600;}
+.add-anggota-btn{width:100%;border:2px dashed var(--gold);background:none;border-radius:10px;padding:12px;
+  color:var(--gold-deep);font-weight:700;font-size:13.5px;cursor:pointer;}
+.add-anggota-btn:hover{background:var(--gold-light);}
+.maps-help{display:inline-block;margin-top:6px;font-size:12px;color:var(--maroon);text-decoration:underline;}
+.submit-btn{width:100%;background:var(--maroon);color:#fff;border:none;border-radius:12px;padding:16px;
+  font-size:15px;font-weight:700;cursor:pointer;margin-top:6px;}
+.submit-btn:hover{background:var(--maroon-dark);}
+.submit-btn:disabled{opacity:0.6;}
+.form-msg{margin-top:14px;padding:12px 14px;border-radius:10px;font-size:13px;text-align:center;display:none;}
+.form-msg.ok{display:block;background:#E8F3E9;color:var(--ok);}
+.form-msg.err{display:block;background:#FBE8E8;color:var(--danger);}
+.success-screen{display:none;text-align:center;padding:60px 20px;}
+.success-screen i{font-size:52px;color:var(--ok);}
+.success-screen h2{color:var(--ink);margin:16px 0 8px;}
+.success-screen p{color:var(--gray);font-size:13.5px;line-height:1.6;}
+.success-screen button{margin-top:20px;background:var(--maroon);color:#fff;border:none;border-radius:10px;padding:12px 24px;font-size:13.5px;font-weight:700;cursor:pointer;}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Formulir Pendataan Keluarga</h1>
+  <p>Paroki Raja Damai Tikala Manado<br>Bapak/Ibu/Saudara/i terkasih, formulir ini bertujuan memetakan kondisi umat di paroki kita, agar pelayanan dapat lebih terarah dan tepat guna. Mohon diisi dengan jujur. Terima kasih. — Dewan Pastoral Paroki</p>
+</div>
+
+<div class="container" id="formContainer">
+
+  <div class="card">
+    <div class="card-title">📋 Data Keluarga</div>
+    <div class="card-sub">Data dasar keluarga Bapak/Ibu.</div>
+
+    <div class="field">
+      <label>Nama Kepala Keluarga <span class="req">*</span></label>
+      <input type="text" id="namaKK" placeholder="Nama lengkap">
+    </div>
+    <div class="field">
+      <label>No. HP / WhatsApp <span class="opt">(opsional)</span></label>
+      <input type="tel" id="noHP" placeholder="08xx-xxxx-xxxx">
+    </div>
+    <div class="field">
+      <label>Wilayah Rohani <span class="req">*</span></label>
+      <select id="wilayahRohani">
+        <option value="">— Pilih Wilayah Rohani —</option>
+        <optgroup label="Pusat Paroki">
+          <option>St. Yosep</option><option>Sta. Monica</option><option>Sta. Brigida</option>
+          <option>Sta. Sisilia</option><option>St. Petrus</option><option>Sta. Lucia</option>
+          <option>Sta. Theresia</option><option>St. Yohanes Bosco</option>
+        </optgroup>
+        <optgroup label="Stasi Salib Suci Taas">
+          <option>St. Benedictus</option><option>St. Vincentius d. Paulo</option>
+          <option>St. Fransiscus Xaverius</option><option>St. Maria</option>
+        </optgroup>
+        <optgroup label="Stasi St. Antonius Padua Paal IV">
+          <option>St. Matius</option><option>Sta. Elizabeth</option><option>St. Markus</option>
+          <option>St. Lukas</option><option>St. Yohanes</option>
+        </optgroup>
+      </select>
+    </div>
+    <div class="field">
+      <label>Alamat <span class="req">*</span></label>
+      <textarea id="alamat" rows="2" placeholder="Nama jalan, nomor rumah, atau patokan yang mudah dikenali"></textarea>
+    </div>
+    <div class="field">
+      <label>Titik Lokasi Google Maps <span class="opt">(opsional — boleh dilewati)</span></label>
+      <input type="text" id="lokasiMaps" placeholder="Tempel link Google Maps di sini (kalau ada)">
+      <a class="maps-help" href="https://maps.google.com" target="_blank" rel="noopener">Buka Google Maps untuk cari &amp; salin link lokasi →</a>
+      <div class="field-hint">Cara singkat: buka Google Maps, cari/tandai rumah Bapak/Ibu, tekan lama titik lokasi, lalu ketuk "Bagikan" untuk menyalin link.</div>
+    </div>
+    <div class="field">
+      <label>Kondisi Ekonomi Keluarga <span class="opt">(opsional)</span></label>
+      <select id="kondisiEkonomi">
+        <option value="">— Pilih —</option>
+        <option>Mampu</option>
+        <option>Cukup</option>
+        <option>Kurang Mampu</option>
+        <option>Sangat Membutuhkan</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Pekerjaan Kepala Keluarga <span class="opt">(opsional)</span></label>
+      <input type="text" id="pekerjaan" placeholder="Contoh: Wiraswasta, PNS, Petani, dll.">
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">👨‍👩‍👧‍👦 Anggota Keluarga</div>
+    <div class="card-sub">Tambahkan setiap anggota keluarga yang tinggal serumah, termasuk Bapak/Ibu sendiri.</div>
+    <div id="anggotaList"></div>
+    <button type="button" class="add-anggota-btn" id="addAnggotaBtn">+ Tambah Anggota Keluarga</button>
+  </div>
+
+  <button type="button" class="submit-btn" id="submitBtn">Kirim Data Keluarga</button>
+  <div class="form-msg" id="formMsg"></div>
+</div>
+
+<div class="success-screen" id="successScreen">
+  <i>✓</i>
+  <h2>Terima Kasih!</h2>
+  <p>Data keluarga Bapak/Ibu telah tersimpan.<br>Tuhan memberkati pelayanan kita bersama.</p>
+  <button id="fillAnotherBtn">Isi Data Keluarga Lain</button>
+</div>
+
+<script>
+// ============================================================
+// KONFIGURASI — GANTI BARIS INI SETELAH DEPLOY GOOGLE APPS SCRIPT
+// ============================================================
+const CONFIG = {
+  API_URL: "https://script.google.com/macros/s/AKfycbyJ9kAs-g2JRdTZ-tuemUZa6CrU5wQq1EHdtIJxvwCIVUIWPyk1CjdlFIrQ7C6-EKrJ/exec",
+};
+// ============================================================
+
+let anggotaCount = 0;
+const KONDISI_KHUSUS_OPTIONS = ['Lansia', 'Disabilitas', 'Sakit Kronis', 'Butuh Bantuan Khusus'];
+
+function addAnggotaRow(){
+  anggotaCount++;
+  const id = 'anggota_' + anggotaCount;
+  const wrap = document.createElement('div');
+  wrap.className = 'anggota-card';
+  wrap.id = id;
+  wrap.innerHTML = `
+    <button type="button" class="anggota-remove" onclick="removeAnggotaRow('${id}')">✕ Hapus</button>
+    <div class="anggota-num">Anggota ${anggotaCount}</div>
+    <div class="field">
+      <label>Nama Lengkap <span class="req">*</span></label>
+      <input type="text" class="a-nama" placeholder="Nama lengkap">
+    </div>
+    <div class="field">
+      <label>Tanggal Lahir <span class="opt">(opsional)</span></label>
+      <input type="date" class="a-tgl">
+    </div>
+    <div class="field">
+      <label>Hubungan dalam Keluarga <span class="req">*</span></label>
+      <select class="a-hubungan">
+        <option value="">— Pilih —</option>
+        <option>Kepala Keluarga</option>
+        <option>Istri/Suami</option>
+        <option>Anak</option>
+        <option>Lainnya</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Sudah Dibaptis?</label>
+      <select class="a-baptis">
+        <option value="">— Pilih —</option>
+        <option>Ya</option><option>Belum</option><option>Tidak Tahu</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Sudah Krisma?</label>
+      <select class="a-krisma">
+        <option value="">— Pilih —</option>
+        <option>Ya</option><option>Belum</option><option>Tidak Tahu</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Kondisi Khusus <span class="opt">(centang bila ada, boleh lebih dari satu)</span></label>
+      <div class="checkbox-group a-kondisi-group">
+        ${KONDISI_KHUSUS_OPTIONS.map(function(k){ return '<div class="checkbox-chip" data-val="'+k+'">'+k+'</div>'; }).join('')}
+      </div>
+    </div>
+  `;
+  document.getElementById('anggotaList').appendChild(wrap);
+  wrap.querySelectorAll('.checkbox-chip').forEach(function(chip){
+    chip.addEventListener('click', function(){ chip.classList.toggle('checked'); });
+  });
+}
+function removeAnggotaRow(id){
+  const el = document.getElementById(id);
+  if(el) el.remove();
+}
+document.getElementById('addAnggotaBtn').addEventListener('click', addAnggotaRow);
+addAnggotaRow(); // mulai dengan 1 baris anggota
+
+function collectAnggotaData(){
+  const rows = document.querySelectorAll('.anggota-card');
+  const out = [];
+  rows.forEach(function(row){
+    const nama = row.querySelector('.a-nama').value.trim();
+    if(!nama) return;
+    const kondisi = [];
+    row.querySelectorAll('.a-kondisi-group .checkbox-chip.checked').forEach(function(c){ kondisi.push(c.getAttribute('data-val')); });
+    out.push({
+      nama: nama,
+      tanggalLahir: row.querySelector('.a-tgl').value,
+      hubungan: row.querySelector('.a-hubungan').value,
+      statusBaptis: row.querySelector('.a-baptis').value,
+      statusKrisma: row.querySelector('.a-krisma').value,
+      kondisiKhusus: kondisi,
+    });
+  });
+  return out;
+}
+
+function apiConfigured(){ return CONFIG.API_URL && CONFIG.API_URL.indexOf('PASTE_URL') === -1; }
+
+document.getElementById('submitBtn').addEventListener('click', async function(){
+  const msgEl = document.getElementById('formMsg');
+  msgEl.className = 'form-msg'; msgEl.textContent = '';
+
+  const namaKK = document.getElementById('namaKK').value.trim();
+  const wilayahRohani = document.getElementById('wilayahRohani').value;
+  const alamat = document.getElementById('alamat').value.trim();
+  const anggota = collectAnggotaData();
+
+  if(!namaKK){ msgEl.textContent = 'Mohon isi Nama Kepala Keluarga.'; msgEl.classList.add('err'); return; }
+  if(!wilayahRohani){ msgEl.textContent = 'Mohon pilih Wilayah Rohani.'; msgEl.classList.add('err'); return; }
+  if(!alamat){ msgEl.textContent = 'Mohon isi Alamat.'; msgEl.classList.add('err'); return; }
+  if(anggota.length === 0){ msgEl.textContent = 'Mohon tambahkan minimal 1 anggota keluarga (boleh diri sendiri).'; msgEl.classList.add('err'); return; }
+
+  if(!apiConfigured()){
+    msgEl.textContent = 'Server belum terhubung. Hubungi Tim Asistensi Paroki.'; msgEl.classList.add('err'); return;
+  }
+
+  const btn = document.getElementById('submitBtn');
+  btn.disabled = true; btn.textContent = 'Mengirim...';
+
+  const payload = {
+    action: 'submitPendataanKeluarga',
+    namaKK: namaKK,
+    noHP: document.getElementById('noHP').value.trim(),
+    wilayahRohani: wilayahRohani,
+    alamat: alamat,
+    lokasiMaps: document.getElementById('lokasiMaps').value.trim(),
+    kondisiEkonomi: document.getElementById('kondisiEkonomi').value,
+    pekerjaan: document.getElementById('pekerjaan').value.trim(),
+    anggota: anggota,
+  };
+
+  try{
+    const res = await fetch(CONFIG.API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify(payload),
+    });
+    const result = await res.json();
+    if(result && result.ok){
+      document.getElementById('formContainer').style.display = 'none';
+      document.getElementById('successScreen').style.display = 'block';
+    }else{
+      msgEl.textContent = 'Gagal mengirim: ' + (result && result.error ? result.error : 'kesalahan tidak diketahui');
+      msgEl.classList.add('err');
+    }
+  }catch(e){
+    msgEl.textContent = 'Gagal terhubung ke server. Periksa koneksi internet dan coba lagi.';
+    msgEl.classList.add('err');
+  }finally{
+    btn.disabled = false; btn.textContent = 'Kirim Data Keluarga';
+  }
+});
+
+document.getElementById('fillAnotherBtn').addEventListener('click', function(){
+  document.getElementById('namaKK').value = '';
+  document.getElementById('noHP').value = '';
+  document.getElementById('wilayahRohani').value = '';
+  document.getElementById('alamat').value = '';
+  document.getElementById('lokasiMaps').value = '';
+  document.getElementById('kondisiEkonomi').value = '';
+  document.getElementById('pekerjaan').value = '';
+  document.getElementById('anggotaList').innerHTML = '';
+  anggotaCount = 0;
+  addAnggotaRow();
+  document.getElementById('successScreen').style.display = 'none';
+  document.getElementById('formContainer').style.display = 'block';
+  window.scrollTo(0, 0);
+});
+</script>
+</body>
+</html>
