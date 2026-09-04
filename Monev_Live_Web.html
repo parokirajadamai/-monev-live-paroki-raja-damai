@@ -27,8 +27,8 @@ body{margin:0;font-family:Calibri,'Segoe UI',Arial,sans-serif;background:var(--w
   .pptx-btn, .export-btn{padding:7px 9px;font-size:0;gap:0;}
   .pptx-btn i, .export-btn i{font-size:16px;}
   .progress-pill{padding:5px 9px;font-size:11px;}
-  .rkt-tabs{margin-top:56px;}
   .body-wrap{margin-top:56px;height:calc(100vh - 56px);}
+  .rkt-body{padding:16px 12px;}
 }
 .progress-pill{background:var(--maroon-dark);border-radius:20px;padding:6px 14px;font-size:13px;font-weight:700;}
 .save-indicator{font-size:11.5px;color:var(--gold-light);display:flex;align-items:center;gap:5px;opacity:0.85;}
@@ -205,7 +205,7 @@ body{margin:0;font-family:Calibri,'Segoe UI',Arial,sans-serif;background:var(--w
 
 /* ---- Modul Rencana Kerja Tahunan (RKT) ---- */
 .rkt-tabs{display:flex;gap:2px;background:var(--white);border-bottom:1px solid var(--line);padding:0 24px;
-  overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:thin;margin-top:64px;}
+  overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:thin;flex:0 0 auto;}
 .rkt-tab{background:none;border:none;padding:14px 18px;font-size:13.5px;font-weight:600;color:var(--gray);cursor:pointer;
   border-bottom:3px solid transparent;display:flex;align-items:center;gap:6px;white-space:nowrap;flex-shrink:0;}
 .rkt-tab.active{color:var(--maroon);border-bottom-color:var(--maroon);}
@@ -351,12 +351,17 @@ body{margin:0;font-family:Calibri,'Segoe UI',Arial,sans-serif;background:var(--w
       <button class="pptx-btn" id="logoutBtn2" title="Keluar / Ganti PIN"><i class="ti ti-logout"></i></button>
     </div>
   </div>
+  <div class="body-wrap">
+  <div class="sidebar">
+    <div class="cat-list" id="rktCatList"></div>
+  </div>
+  <div class="main" style="padding:0;display:flex;flex-direction:column;">
   <div class="rkt-tabs">
     <button class="rkt-tab active" id="rktTabLanjutan" data-tab="lanjutan"><i class="ti ti-list-check"></i>Program 2026 — Dilanjutkan?</button>
     <button class="rkt-tab" id="rktTabBaru" data-tab="baru"><i class="ti ti-plus"></i>Usulan Program Baru</button>
     <button class="rkt-tab" id="rktTabStatistik" data-tab="statistik"><i class="ti ti-users"></i>Statistik Wilayah</button>
   </div>
-  <div class="rkt-body">
+  <div class="rkt-body" style="overflow-y:auto;flex:1;">
     <div id="rktPanelLanjutan" class="rkt-panel">
       <div class="rkt-panel-note">Untuk setiap program kerja 2026 di kelompok Anda, tentukan apakah akan dilanjutkan pada Rencana Kerja 2027.</div>
       <div id="rktLanjutanList"></div>
@@ -387,6 +392,21 @@ body{margin:0;font-family:Calibri,'Segoe UI',Arial,sans-serif;background:var(--w
         <div class="rkt-form-row">
           <label>Waktu / Bulan Pelaksanaan</label>
           <input type="text" id="rktWaktu" placeholder="Contoh: Maret 2027">
+        </div>
+        <div class="rkt-form-row">
+          <label>Perkiraan Total Anggaran <span class="opt">(opsional, boleh kosong kalau belum tahu)</span></label>
+          <input type="number" id="rktPerkiraanAnggaran" min="0" placeholder="Contoh: 500000">
+        </div>
+        <div class="rkt-form-row">
+          <label>Sumber Anggaran <span class="opt">(opsional)</span></label>
+          <select id="rktSumberAnggaran">
+            <option value="">— Pilih —</option>
+            <option>Kas Paroki</option>
+            <option>Swadaya Kelompok</option>
+            <option>Wilayah Rohani</option>
+            <option>Stasi</option>
+            <option>Belum Diketahui</option>
+          </select>
         </div>
         <button class="rkt-submit-btn" id="rktSubmitBaru"><i class="ti ti-plus"></i>Tambahkan Usulan</button>
         <div class="rkt-form-msg" id="rktFormMsg"></div>
@@ -423,6 +443,8 @@ body{margin:0;font-family:Calibri,'Segoe UI',Arial,sans-serif;background:var(--w
       <div id="rktStatistikAdminTable"></div>
     </div>
   </div>
+  </div><!-- /rkt-main -->
+  </div><!-- /body-wrap -->
 </div><!-- /rktAppWrap -->
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script>
@@ -535,7 +557,7 @@ const TEMPLATE_B64 = "UEsDBBQACAgIAI92E10AAAAAAAAAAAAAAAAaAAAAeGwvX3JlbHMvd29ya2
 // KONFIGURASI — GANTI BARIS INI SETELAH DEPLOY GOOGLE APPS SCRIPT
 // ============================================================
 const CONFIG = {
-  API_URL: "https://script.google.com/macros/s/AKfycbyJ9kAs-g2JRdTZ-tuemUZa6CrU5wQq1EHdtIJxvwCIVUIWPyk1CjdlFIrQ7C6-EKrJ/exec", // contoh: https://script.google.com/macros/s/AKfycbx.../exec
+  API_URL: "https://script.google.com/macros/s/AKfycbxTHv5yh9YcbqiNES92jrgZGhwfDqu0snj6AP0tPyIbgReB9L48acBCOgQd83xAiu1Z/exec", // contoh: https://script.google.com/macros/s/AKfycbx.../exec
 };
 // ============================================================
 
@@ -1757,6 +1779,7 @@ document.getElementById('exportDetailBtn').addEventListener('click', exportRekap
 let rktLanjutanData = {};
 let rktBaruData = [];
 const rktPendingSync = {};
+let rktActiveCat = null;
 
 function rktIsAdmin(){
   const kp = String(currentKategoriPengisi || '').trim().toUpperCase();
@@ -1770,10 +1793,71 @@ async function enterRktApp(){
   if(rktLoggedInEl && currentKategoriPengisi){
     rktLoggedInEl.innerHTML = 'Masuk sebagai: <b>' + escapeHtml(currentKategoriPengisi) + '</b>' + (rktIsAdmin() ? ' <span style="opacity:0.7;">(akses penuh)</span>' : '');
   }
+  rktActiveCat = rktIsAdmin() ? null : restrictedKategori;
   populateRktBidangSelect();
   await rktLoadAll();
+  renderRktSidebar();
   renderRktLanjutan();
   renderRktBaru();
+}
+
+function rktSelectCategory(cat){
+  if(!rktIsAdmin() && cat !== restrictedKategori) return; // kelompok non-admin tidak bisa pindah
+  rktActiveCat = (rktIsAdmin() && rktActiveCat === cat) ? null : cat; // admin: klik lagi utk lihat semua
+  renderRktSidebar();
+  renderRktLanjutan();
+  renderRktBaru();
+  if(document.getElementById('rktPanelStatistik').style.display !== 'none') renderRktStatistik();
+}
+
+function rktCountLanjut(cat){
+  return DATA.filter(function(it){ return it.c === cat; }).filter(function(it){
+    const d = rktLanjutanData[it.n];
+    return d && d.Lanjut2027 === 'Ya';
+  }).length;
+}
+function rktCountBaru(cat){
+  return rktBaruData.filter(function(it){ return it.Kategori === cat; }).length;
+}
+function rktStatistikDone(cat){
+  const d = rktStatistikData[cat];
+  if(!d) return false;
+  return !!(d.JumlahKeluarga || d.JumlahJiwa || d.JumlahLaki || d.JumlahPerempuan || d.JumlahAnggota);
+}
+
+function renderRktSidebar(){
+  const list = document.getElementById('rktCatList');
+  if(!list) return;
+  const grouped = {};
+  categories.forEach(function(cat){
+    const g = groupType(cat);
+    if(!grouped[g]) grouped[g] = [];
+    grouped[g].push(cat);
+  });
+  let html = '';
+  GROUP_ORDER.forEach(function(g){
+    if(!grouped[g]) return;
+    html += '<div class="group-label">' + escapeHtml(g) + '</div>';
+    grouped[g].forEach(function(cat){
+      const isLocked = !rktIsAdmin() && cat !== restrictedKategori;
+      const isActive = cat === rktActiveCat;
+      const lanjut = rktCountLanjut(cat);
+      const baru = rktCountBaru(cat);
+      const statOk = rktStatistikDone(cat);
+      html += '<div class="cat-item' + (isActive ? ' active' : '') + (isLocked ? ' locked' : '') + '" data-cat="' + escapeHtml(cat) + '">' +
+        '<span class="name">' + (isLocked ? '<i class="ti ti-lock" style="font-size:11px;margin-right:4px;opacity:0.6;"></i>' : '') + escapeHtml(cat) + '</span>' +
+        '<span class="cat-badges">' +
+          '<span class="badge-count" title="Program dilanjutkan">' + lanjut + ' lanjut</span>' +
+          '<span class="badge-filled" title="Usulan program baru" style="background:var(--gold-deep);">' + baru + ' baru</span>' +
+          (statOk ? '<span class="badge-done-check" title="Statistik sudah diisi">✓</span>' : '<span class="badge-done-none" title="Statistik belum diisi">stat -</span>') +
+        '</span>' +
+      '</div>';
+    });
+  });
+  list.innerHTML = html;
+  list.querySelectorAll('.cat-item').forEach(function(row){
+    row.addEventListener('click', function(){ rktSelectCategory(row.getAttribute('data-cat')); });
+  });
 }
 
 function rktSetSync(state, text){
@@ -1823,7 +1907,8 @@ function rktSwitchTab(tab){
 // ---------------- TAB 1: PROGRAM 2026 - LANJUTAN? ----------------
 function renderRktLanjutan(){
   const wrap = document.getElementById('rktLanjutanList');
-  const items = DATA.filter(function(it){ return rktIsAdmin() || it.c === restrictedKategori; });
+  const scope = rktIsAdmin() ? rktActiveCat : restrictedKategori;
+  const items = DATA.filter(function(it){ return scope ? it.c === scope : rktIsAdmin(); });
   if(items.length === 0){
     wrap.innerHTML = '<div class="rkt-empty">Tidak ada program 2026 untuk kelompok ini.</div>';
     return;
@@ -1836,7 +1921,7 @@ function renderRktLanjutan(){
   });
   let html = '';
   Object.keys(byCat).sort().forEach(function(cat){
-    if(rktIsAdmin()) html += '<div class="rkt-cat-group-title">' + escapeHtml(cat) + '</div>';
+    if(rktIsAdmin() && !scope) html += '<div class="rkt-cat-group-title">' + escapeHtml(cat) + '</div>';
     byCat[cat].forEach(function(it){
       const d = rktLanjutanData[it.n] || {};
       const lanjut = d.Lanjut2027;
@@ -1903,6 +1988,7 @@ async function rktSaveLanjutan(no){
     if(res && res.ok){
       delete rktPendingSync[no];
       rktSetSync(Object.keys(rktPendingSync).length ? 'error' : 'ok', Object.keys(rktPendingSync).length ? (Object.keys(rktPendingSync).length + ' belum tersinkron') : 'Tersambung ke server');
+      renderRktSidebar();
     }else{
       rktPendingSync[no] = true;
       rktSetSync('error', Object.keys(rktPendingSync).length + ' item belum tersinkron');
@@ -1942,6 +2028,8 @@ document.getElementById('rktSubmitBaru').addEventListener('click', async functio
   const sasaran = document.getElementById('rktSasaran').value.trim();
   const indikator = document.getElementById('rktIndikator').value.trim();
   const waktu = document.getElementById('rktWaktu').value.trim();
+  const perkiraanAnggaran = document.getElementById('rktPerkiraanAnggaran').value;
+  const sumberAnggaran = document.getElementById('rktSumberAnggaran').value;
   const msgEl = document.getElementById('rktFormMsg');
   msgEl.textContent = '';
   msgEl.className = 'rkt-form-msg';
@@ -1961,7 +2049,8 @@ document.getElementById('rktSubmitBaru').addEventListener('click', async functio
   try{
     const res = await apiPost({
       action: 'addRktBaru', bidang: bidang, noProgramStrategis: progNum, namaProgramStrategis: progTitle,
-      namaProgramBaru: nama, sasaran: sasaran, indikator: indikator, waktu: waktu, pin: currentPin || '',
+      namaProgramBaru: nama, sasaran: sasaran, indikator: indikator, waktu: waktu,
+      perkiraanAnggaran: perkiraanAnggaran, sumberAnggaran: sumberAnggaran, pin: currentPin || '',
     });
     if(res && res.ok){
       msgEl.textContent = 'Usulan berhasil ditambahkan.';
@@ -1970,10 +2059,13 @@ document.getElementById('rktSubmitBaru').addEventListener('click', async functio
       document.getElementById('rktSasaran').value = '';
       document.getElementById('rktIndikator').value = '';
       document.getElementById('rktWaktu').value = '';
+      document.getElementById('rktPerkiraanAnggaran').value = '';
+      document.getElementById('rktSumberAnggaran').value = '';
       document.getElementById('rktBidangSelect').value = '';
       progSelEl.innerHTML = '<option value="">— Pilih Bidang dahulu —</option>';
       await rktLoadAll();
       renderRktBaru();
+      renderRktSidebar();
     }else{
       msgEl.textContent = 'Gagal menyimpan: ' + (res && res.error ? res.error : 'kesalahan tidak diketahui');
       msgEl.classList.add('err');
@@ -1986,14 +2078,25 @@ document.getElementById('rktSubmitBaru').addEventListener('click', async functio
   }
 });
 
+function fmtRupiah(v){
+  if(v === undefined || v === null || v === '') return '';
+  const n = Number(v);
+  if(isNaN(n)) return v;
+  return 'Rp ' + n.toLocaleString('id-ID');
+}
+
 function renderRktBaru(){
   const wrap = document.getElementById('rktBaruList');
-  const items = rktBaruData.filter(function(it){ return rktIsAdmin() || it.Kategori === restrictedKategori; });
+  const scope = rktActiveCat || restrictedKategori;
+  const items = rktBaruData.filter(function(it){ return rktIsAdmin() ? (!rktActiveCat || it.Kategori === rktActiveCat) : it.Kategori === restrictedKategori; });
   if(items.length === 0){
     wrap.innerHTML = '<div class="rkt-empty">Belum ada usulan program baru.</div>';
     return;
   }
   wrap.innerHTML = items.map(function(it){
+    const anggaranLine = (it.PerkiraanAnggaran || it.SumberAnggaran)
+      ? '<b>Perkiraan Anggaran:</b> ' + (fmtRupiah(it.PerkiraanAnggaran) || '-') + (it.SumberAnggaran ? ' &middot; Sumber: ' + escapeHtml(it.SumberAnggaran) : '') + '<br>'
+      : '';
     return '<div class="rkt-baru-item" data-id="' + escapeHtml(it.ID) + '">' +
       '<button class="rkt-delete-btn" title="Hapus"><i class="ti ti-trash"></i></button>' +
       '<div class="rkt-item-bidang">' + escapeHtml(it.Bidang || '') + ' &middot; Program Strategis ' + escapeHtml(it.NoProgramStrategis || '') + '</div>' +
@@ -2002,7 +2105,8 @@ function renderRktBaru(){
         '<b>Kategori pengusul:</b> ' + escapeHtml(it.Kategori || '') + '<br>' +
         '<b>Sasaran:</b> ' + escapeHtml(it.Sasaran || '-') + '<br>' +
         '<b>Indikator:</b> ' + escapeHtml(it.Indikator || '-') + '<br>' +
-        '<b>Waktu:</b> ' + escapeHtml(it.Waktu || '-') +
+        '<b>Waktu:</b> ' + escapeHtml(it.Waktu || '-') + '<br>' +
+        anggaranLine +
       '</div>' +
     '</div>';
   }).join('');
@@ -2016,6 +2120,7 @@ function renderRktBaru(){
         if(res && res.ok){
           await rktLoadAll();
           renderRktBaru();
+          renderRktSidebar();
         }else{
           alert('Gagal menghapus: ' + (res && res.error ? res.error : 'kesalahan tidak diketahui'));
         }
@@ -2110,6 +2215,7 @@ document.getElementById('rktSubmitStatistik').addEventListener('click', async fu
     if(res && res.ok){
       msgEl.textContent = 'Statistik berhasil disimpan.'; msgEl.classList.add('ok');
       rktStatistikData[restrictedKategori] = { JumlahKeluarga: jumlahKeluarga, JumlahJiwa: jumlahJiwa, JumlahLaki: jumlahLaki, JumlahPerempuan: jumlahPerempuan, JumlahAnggota: jumlahAnggota };
+      renderRktSidebar();
     }else{
       msgEl.textContent = 'Gagal menyimpan: ' + (res && res.error ? res.error : 'kesalahan tidak diketahui'); msgEl.classList.add('err');
     }
