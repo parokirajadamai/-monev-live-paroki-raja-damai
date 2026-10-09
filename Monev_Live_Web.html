@@ -220,6 +220,11 @@ body{margin:0;font-family:Calibri,'Segoe UI',Arial,sans-serif;background:var(--w
 .rkt-panel-note{background:#F5F2ED;border-left:4px solid var(--gold);border-radius:8px;padding:12px 16px;
   font-size:13px;color:var(--ink);margin-bottom:18px;line-height:1.5;}
 .rkt-lanjut-item{background:var(--white);border:1px solid var(--line);border-radius:10px;padding:14px 18px;margin-bottom:10px;}
+.rkt-renstra-hint{margin-top:8px;padding:10px 12px;background:#FBF6E6;border-left:3px solid var(--gold-deep);border-radius:6px;font-size:12px;line-height:1.55;color:var(--ink);}
+.rkt-renstra-row{margin-top:6px;}
+.rkt-renstra-no{display:inline-block;background:var(--gold-deep);color:#fff;font-weight:700;font-size:11px;padding:1px 7px;border-radius:10px;}
+.rkt-renstra-sub{font-size:11px;color:var(--gray);margin-top:2px;}
+.rkt-renstra-chip{display:inline-block;background:#FBF6E6;border:1px solid var(--gold-deep);color:var(--gold-deep);font-weight:600;font-size:10.5px;padding:0 7px;border-radius:10px;}
 .rkt-lanjut-item .rkt-item-title{font-weight:600;font-size:13.5px;color:var(--ink);margin-bottom:2px;}
 .rkt-lanjut-item .rkt-item-meta{font-size:11.5px;color:var(--gray);margin-bottom:10px;}
 .rkt-indikator-asli{font-size:11.5px;color:var(--gray);background:#F5F2ED;border-radius:6px;padding:8px 10px;margin-bottom:10px;line-height:1.5;}
@@ -347,6 +352,7 @@ body{margin:0;font-family:Calibri,'Segoe UI',Arial,sans-serif;background:var(--w
     </div>
     <div class="right">
       <div class="sync-indicator sync-pending" id="rktSyncIndicator"><i class="ti ti-cloud"></i>Memuat...</div>
+      <button class="recap-btn" id="rktRecapBtn" style="display:none;"><i class="ti ti-report-analytics"></i>Rekapitulasi</button>
       <button class="pptx-btn" id="backToMenuBtn2" title="Kembali ke Menu"><i class="ti ti-arrow-left"></i>Menu</button>
       <button class="pptx-btn" id="logoutBtn2" title="Keluar / Ganti PIN"><i class="ti ti-logout"></i></button>
     </div>
@@ -376,6 +382,7 @@ body{margin:0;font-family:Calibri,'Segoe UI',Arial,sans-serif;background:var(--w
         <div class="rkt-form-row">
           <label>Program Strategis (Renstra Keuskupan)</label>
           <select id="rktProgramStrategisSelect"><option value="">— Pilih Bidang dahulu —</option></select>
+          <div id="rktRenstraHint" class="rkt-renstra-hint" style="display:none"></div>
         </div>
         <div class="rkt-form-row">
           <label>Nama Program Kerja Baru</label>
@@ -388,6 +395,12 @@ body{margin:0;font-family:Calibri,'Segoe UI',Arial,sans-serif;background:var(--w
         <div class="rkt-form-row">
           <label>Indikator Pencapaian</label>
           <textarea id="rktIndikator" rows="2" placeholder="Contoh: 80% pengurus mengikuti kegiatan, dinilai melalui evaluasi sederhana"></textarea>
+        </div>
+        <div class="rkt-form-row">
+          <label>Penanggung Jawab (PIC) <span class="opt" id="rktPicOpt">(opsional)</span></label>
+          <input type="text" id="rktPic" list="rktPicList" placeholder="Contoh: Seksi Liturgi / Kaum Bapa Ranting Sta. Maria">
+          <datalist id="rktPicList"></datalist>
+          <div style="font-size:11px;color:var(--gray);margin-top:3px;">Tulis seksi atau kelompok yang bertanggung jawab. Saran muncul otomatis dari Renstra setelah Program Strategis dipilih.</div>
         </div>
         <div class="rkt-form-row">
           <label>Waktu / Bulan Pelaksanaan</label>
@@ -446,6 +459,19 @@ body{margin:0;font-family:Calibri,'Segoe UI',Arial,sans-serif;background:var(--w
   </div><!-- /rkt-main -->
   </div><!-- /body-wrap -->
 </div><!-- /rktAppWrap -->
+
+<div class="modal-overlay" id="rktRecapOverlay">
+  <div class="modal-box">
+    <button class="modal-close" id="rktRecapClose"><i class="ti ti-x"></i></button>
+    <h2>Rekapitulasi Usulan Rencana Kerja 2027</h2>
+    <div class="modal-note" id="rktRecapNote"></div>
+    <div id="rktRecapWrap"></div>
+    <div class="modal-actions">
+      <button id="rktCopyRecapBtn"><i class="ti ti-copy"></i>Salin Tabel Rekap</button>
+    </div>
+    <div class="modal-hint"><i class="ti ti-info-circle"></i>Data ini otomatis mengikuti isian terbaru dari seluruh kelompok — buka lagi kapan saja untuk melihat progres terkini.</div>
+  </div>
+</div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script>
 <script>
@@ -1793,8 +1819,10 @@ async function enterRktApp(){
   if(rktLoggedInEl && currentKategoriPengisi){
     rktLoggedInEl.innerHTML = 'Masuk sebagai: <b>' + escapeHtml(currentKategoriPengisi) + '</b>' + (rktIsAdmin() ? ' <span style="opacity:0.7;">(akses penuh)</span>' : '');
   }
+  document.getElementById('rktRecapBtn').style.display = rktIsAdmin() ? '' : 'none';
   rktActiveCat = rktIsAdmin() ? null : restrictedKategori;
   populateRktBidangSelect();
+  rktUpdatePicLabel();
   await rktLoadAll();
   renderRktSidebar();
   renderRktLanjutan();
@@ -1927,7 +1955,7 @@ function renderRktLanjutan(){
       const lanjut = d.Lanjut2027;
       html += '<div class="rkt-lanjut-item" data-no="' + it.n + '">' +
         '<div class="rkt-item-title">' + escapeHtml(it.p) + '</div>' +
-        '<div class="rkt-item-meta">' + escapeHtml(it.n) + ' &middot; Sasaran: ' + escapeHtml(it.s || '-') + '</div>' +
+        '<div class="rkt-item-meta">' + escapeHtml(it.n) + ' &middot; Sasaran: ' + escapeHtml(it.s || '-') + (renstraTag(it.n.split('.')[1]) ? ' &middot; <span class="rkt-renstra-chip">Renstra Paroki ' + escapeHtml(renstraTag(it.n.split('.')[1])) + '</span>' : '') + '</div>' +
         '<div class="rkt-indikator-asli"><b>Indikator 2026 (acuan lama):</b> ' + escapeHtml(it.i || '-') + '</div>' +
         '<div class="rkt-toggle-group">' +
           '<button class="rkt-toggle-btn' + (lanjut === 'Ya' ? ' active-ya' : '') + '" data-val="Ya">Ya, dilanjutkan</button>' +
@@ -2000,6 +2028,43 @@ async function rktSaveLanjutan(no){
 }
 
 // ---------------- TAB 2: USULAN PROGRAM BARU ----------------
+const RENSTRA_PAROKI = [{"no": "1.1.1", "txt": "Sosialisasi dan internalisasi Ardas, Statuta, dan Renstra bagi pengurus dan umat di seluruh WR, stasi, dan kelompok kategorial", "ind": "Pengurus yang mengikuti dan memahami inti Ardas, Statuta, dan Renstra", "t27": "≥70%", "pic": "Pastor Paroki, DPP, Ketua WR", "progs": ["01"]}, {"no": "1.1.2", "txt": "Pembinaan kepemimpinan yang melayani dan tata kelola pastoral: retret kepemimpinan, pelatihan analisis risiko dan evaluasi program", "ind": "Pengurus inti yang dibina sekurang-kurangnya sekali per tahun", "t27": "≥70%", "pic": "Pastor Paroki, DPP", "progs": ["02"]}, {"no": "1.1.3", "txt": "Perencanaan partisipatif: workshop penyusunan RKT dan anggaran tahunan WR, kategorial, stasi, dan paroki yang selaras dengan Renstra", "ind": "Unit yang menyusun RKT dan anggaran tepat waktu", "t27": "90%", "pic": "DPP, Ketua WR, Ketua Stasi, Pengurus kategorial", "progs": ["02"]}, {"no": "1.1.4", "txt": "Penataan data umat dan dokumen kanonik: verifikasi domisili, pendataan umat, validasi buku sakramen dan status animarum, digitalisasi database", "ind": "Data umat terverifikasi dan terdigitalisasi; buku sakramen tervalidasi", "t27": "100% terverifikasi dan digital", "pic": "Sekretariat Paroki, Ketua WR, Ketua Stasi", "progs": ["34"]}, {"no": "1.2.1", "txt": "Ibadat rutin wilayah dan pengembangan doa rosario kreatif yang melibatkan semua kelompok usia", "ind": "Umat yang terlibat dalam ibadat rutin wilayah", "t27": "≥65%", "pic": "Ketua WR, Seksi Liturgi", "progs": ["05"]}, {"no": "1.2.2", "txt": "Perayaan kebersamaan paroki: pesta pelindung Kristus Raja Damai, pesta pelindung stasi dan WR, syukur imamat dan ulang tahun pastor, ziarah", "ind": "WR dan stasi yang terlibat dalam perayaan bersama", "t27": "≥92%", "pic": "DPP, Ketua WR, Ketua Stasi", "progs": ["06"]}, {"no": "1.2.3", "txt": "Rekonsiliasi: Sakramen dan Ibadat Tobat masa Adven dan Prapaskah; mediasi pastoral untuk perselisihan", "ind": "WR dan stasi yang menyelenggarakan tobat; tim mediasi pastoral", "t27": "Tobat 85%; tim mediasi terbentuk", "pic": "Pastor Paroki, Ketua WR", "progs": ["06"]}, {"no": "1.2.4", "txt": "Penguatan persekutuan basis anak dan orang muda: rekoleksi pembina Sekami, jambore Sekami, ibadah KBK, rekoleksi WR", "ind": "Kehadiran pembina Sekami dan delegasi pada kegiatan", "t27": "≥85%", "pic": "Pembina Sekami, Pengurus kategorial", "progs": ["06"]}, {"no": "1.3.1", "txt": "Rapat monev berkala di WR, stasi, kategorial, dan paroki pada Maret, Juni, September, dan Desember", "ind": "Unit yang melaksanakan empat kali monev dan melapor", "t27": "90%", "pic": "Ketua WR, Ketua Stasi, Koordinator Bidang", "progs": ["08", "24", "33", "48", "61", "86"]}, {"no": "1.3.2", "txt": "Pembentukan Tim Monev Paroki dan evaluasi tahunan paroki dengan rencana tindak lanjut", "ind": "Tim Monev ber-SK; laporan evaluasi tahunan", "t27": "Tim terbentuk; 1 laporan", "pic": "Pastor Paroki, DKP, DPP", "progs": ["87"]}, {"no": "2.1.1", "txt": "Pembentukan dan pembekalan Tim Katekese paroki dan stasi, termasuk fasilitator katekese di WR", "ind": "Tim ber-SK (3–5 katekis, lulus ≥80%); WR yang memiliki fasilitator terlatih", "t27": "WR 50%", "pic": "Pastor Paroki, Seksi Katekese", "progs": ["09"]}, {"no": "2.1.2", "txt": "Pendataan dan pelibatan alumni STF/STP dan mantan frater sebagai tenaga pendukung", "ind": "Populasi target terdata; alumni terlibat", "t27": "Terdata 100%", "pic": "Seksi Katekese, Koordinator Bidang", "progs": ["10", "11"]}, {"no": "2.2.1", "txt": "Katekese berjenjang rutin bagi semua kelompok usia di WR dan stasi, sekurang-kurangnya lima kali per tahun per jenjang", "ind": "WR dan stasi yang melaksanakan katekese berjenjang rutin", "t27": "85%", "pic": "Seksi Katekese, Ketua WR", "progs": ["18", "19"]}, {"no": "2.2.2", "txt": "Peningkatan kehadiran dan keaktifan umat dalam katekese", "ind": "Umat sasaran yang aktif mengikuti katekese", "t27": "≥67%", "pic": "Seksi Katekese, Ketua WR", "progs": ["19"]}, {"no": "2.2.3", "txt": "Penyusunan, penggunaan, dan penyempurnaan modul katekese yang seragam, termasuk iman dan moral kontekstual", "ind": "Modul digunakan di WR dan stasi", "t27": "Dipakai 100%", "pic": "Seksi Katekese", "progs": ["15", "16"]}, {"no": "2.2.4", "txt": "Pengukuran pemahaman iman (kuesioner atau tes sederhana) dan evaluasi total program katekese pada Juni, September, dan Desember", "ind": "Skor pemahaman iman meningkat; laporan evaluasi memuat ≥3 kekuatan dan ≥3 kelemahan", "t27": "Skor naik", "pic": "Seksi Katekese, Koordinator Bidang", "progs": ["24"]}, {"no": "2.3.1", "txt": "Katekese keluarga dan parenting iman", "ind": "Kegiatan di pusat paroki dan tiap stasi", "t27": "≥1 kali per lokasi", "pic": "Seksi Katekese, Tim Pastoral Keluarga", "progs": ["20"]}, {"no": "2.3.2", "txt": "Partisipasi dalam Tahun Katekese Keuskupan dan gerakan katekese Keuskupan", "ind": "Keikutsertaan paroki sesuai jadwal Keuskupan", "t27": "100%", "pic": "Pastor Paroki, Seksi Katekese", "progs": ["21"]}, {"no": "2.3.3", "txt": "Penyediaan ruang dan sarana katekese di pusat paroki dan stasi", "ind": "Lokasi dengan ruang dan sarana katekese yang memadai", "t27": "33% lokasi", "pic": "DPP, Seksi Katekese", "progs": ["22"]}, {"no": "2.4.1", "txt": "Peningkatan kapasitas Komsos paroki dan stasi untuk pewartaan berbasis platform digital", "ind": "Konten pewartaan per bulan; interaksi ≥5% dari rata-rata pengikut", "t27": "≥4 konten (paroki dan stasi)", "pic": "Seksi Komsos, Ketua Stasi", "progs": ["17"]}, {"no": "3.1.1", "txt": "Penyusunan jadwal rotasi petugas liturgi tahunan di awal tahun", "ind": "Unit dengan jadwal rotasi tahunan", "t27": "100% semua unit", "pic": "Seksi Liturgi, Ketua Stasi, Ketua WR", "progs": ["25"]}, {"no": "3.1.2", "txt": "Latihan bersama petugas liturgi sebelum bertugas di WR dan stasi", "ind": "Petugas yang mengikuti latihan", "t27": "85%", "pic": "Seksi Liturgi, Ketua WR", "progs": ["26"]}, {"no": "3.1.3", "txt": "Pelatihan lektor,  pemazmur, misdinar, dan koster", "ind": "Pelatihan per tahun", "t27": "≥1 kali", "pic": "Seksi Liturgi", "progs": ["26"]}, {"no": "3.2.1", "txt": "Pembentukan dan pelatihan koor, dirigen, dan pemazmur; pembentukan koor stasi dan pusat paroki", "ind": "Stasi dan WR yang memiliki koor dan petugas musik terlatih", "t27": "WR 60%", "pic": "Seksi Liturgi, Ketua Stasi, Ketua WR", "progs": ["28"]}, {"no": "3.2.2", "txt": "Kaderisasi organis muda dari OMK dan pembinaan cantores", "ind": "Organis muda aktif", "t27": "≥5", "pic": "Seksi Liturgi, Pengurus OMK", "progs": ["28"]}, {"no": "3.3.1", "txt": "Penerapan pedoman liturgi Keuskupan: Tata Perayaan Ekaristi 2020, pedoman ibadat Sabda, dan seni merayakan Ekaristi", "ind": "Pusat paroki dan stasi yang menerapkan pedoman", "t27": "Sosialisasi ke petugas", "pic": "Pastor Paroki, Seksi Liturgi", "progs": ["25", "29"]}, {"no": "3.3.2", "txt": "Literasi liturgi: pembekalan Tri Hari Suci dan Natal", "ind": "Petugas yang mengikuti pembekalan", "t27": "≥95%", "pic": "Seksi Liturgi", "progs": ["27"]}, {"no": "3.3.3", "txt": "Inkulturasi liturgi sesuai pedoman yang disahkan Keuskupan", "ind": "Penerapan pada perayaan terkait", "t27": "Sosialisasi", "pic": "Seksi Liturgi", "progs": ["30"]}, {"no": "3.3.4", "txt": "Evaluasi komprehensif liturgi paroki dan stasi", "ind": "Evaluasi per tahun", "t27": "2 kali", "pic": "Seksi Liturgi, Ketua Stasi", "progs": ["33"]}, {"no": "4.1.1", "txt": "Program Karitatif Tahunan Paroki yang terpadu dan penguatan kinerja Seksi PSE", "ind": "Program tersusun dan terlaksana; WR yang memiliki koordinator karitatif", "t27": "100%; 80% WR", "pic": "Seksi PSE, Ketua WR", "progs": ["43", "45", "50"]}, {"no": "4.1.2", "txt": "Kunjungan kasih bagi umat sakit, lansia, dan berkebutuhan khusus; Hari Orang Sakit Sedunia; kunjungan pastoral terpadu Pastor dan awam", "ind": "Kunjungan per WR per tahun", "t27": "≥2 kali", "pic": "Seksi PSE, Ketua WR, Legio Mariae", "progs": ["37", "41", "45"]}, {"no": "4.1.3", "txt": "Pendampingan rohani warga binaan pemasyarakatan, kunjungan panti asuhan dan panti werdha, diakonia Natal", "ind": "WR yang melaksanakan sekurang-kurangnya dua kali per tahun", "t27": "85%", "pic": "Seksi PSE, Ketua WR, Pengurus OMK", "progs": ["45"]}, {"no": "4.2.1", "txt": "Dana sehat, dana duka, dan dana bencana; pembentukan rukun duka stasi", "ind": "WR dan stasi yang menjalankan jaminan sosial umat", "t27": "60%", "pic": "Seksi PSE, Ketua WR, Ketua Stasi", "progs": ["47"]}, {"no": "4.2.2", "txt": "Bedah rumah dan pembangunan MCK bagi keluarga prasejahtera", "ind": "Unit rumah atau MCK yang dibangun atau diperbaiki (kumulatif)", "t27": "12", "pic": "Seksi PSE, Pengurus KBK", "progs": ["46"]}, {"no": "4.2.3", "txt": "Pelatihan tanggap bencana dan pemulihan komunitas", "ind": "WR dengan sekurang-kurangnya tiga anggota terlatih", "t27": "75%", "pic": "Seksi PSE, Ketua WR", "progs": ["49"]}, {"no": "4.3.1", "txt": "Database karunia dan kebutuhan umat serta jejaring kemitraan", "ind": "WR yang menyampaikan data", "t27": "80%", "pic": "Seksi PSE, Ketua WR", "progs": ["44"]}, {"no": "4.3.2", "txt": "Marketplace umat dan pembinaan UMKM", "ind": "UMKM umat yang terdaftar dan terbina (kumulatif)", "t27": "20", "pic": "Seksi PSE", "progs": ["44", "52"]}, {"no": "4.3.3", "txt": "Pelatihan kewirausahaan, pengembangan minat dan bakat (kuliner, ekonomi kreatif)", "ind": "Pelatihan per tahun", "t27": "≥2", "pic": "Seksi PSE, Pengurus KBK, Ketua WR", "progs": ["49", "51"]}, {"no": "4.3.4", "txt": "Pembentukan koperasi atau dana bergulir umat", "ind": "Tahapan pembentukan", "t27": "Kajian dan persiapan", "pic": "Seksi PSE, DKP", "progs": ["53", "54"]}, {"no": "4.3.5", "txt": "Ketahanan pangan: pendataan dan pemanfaatan lahan, kebun wilayah", "ind": "Lokasi berlahan yang memanfaatkan lahan", "t27": "Lahan terdata", "pic": "Seksi PSE, Ketua WR", "progs": ["55", "59"]}, {"no": "4.4.1", "txt": "Pembinaan kerasulan awam berjenjang dan kaderisasi kelompok kategorial;", "ind": "Kelompok kategorial yang mengikuti pelatihan kaderisasi sekurang-kurangnya sekali per tahun", "t27": "80%", "pic": "Koordinator Bidang, Pengurus kategorial", "progs": ["38", "39"]}, {"no": "4.4.2", "txt": "Sinergi kelompok kategorial dalam program paroki (OMK, Legio Mariae, PD Karismatik, WKRI, KBK)", "ind": "Kelompok kategorial yang terlibat dalam sekurang-kurangnya dua program paroki", "t27": "≥80%", "pic": "Pastor Paroki, Pengurus kategorial", "progs": ["38"]}, {"no": "4.4.3", "txt": "Pembinaan OMK dan Sekami: forum dialog OMK bulanan, OMK sebagai mentor Sekami", "ind": "Forum dialog OMK per tahun", "t27": "≥10", "pic": "Pengurus OMK, Pembina", "progs": ["38", "40"]}, {"no": "4.4.4", "txt": "Seminar perlindungan hak anak dan perempuan; dialog dan kerja sama dengan umat beragama lain", "ind": "Kegiatan per tahun", "t27": "Dialog ≥1; seminar 1", "pic": "WKRI, Seksi PSE", "progs": ["56", "57", "58"]}, {"no": "4.5.1", "txt": "Pembentukan dan pelatihan tim persiapan perkawinan, konselor, dan pembinaan keluarga", "ind": "Tim ber-SK; calon pengantin yang mengikuti persiapan perkawinan", "t27": "Tim terbentuk; 80%", "pic": "Pastor Paroki, Tim Pastoral Keluarga", "progs": ["35", "36"]}, {"no": "4.5.2", "txt": "Kunjungan dan monitoring keluarga berkala", "ind": "Keluarga yang dikunjungi (kumulatif)", "t27": "25%", "pic": "Tim Pastoral Keluarga, Ketua WR", "progs": ["37"]}, {"no": "4.6.1", "txt": "Program ekologi integral di WR dan stasi: kebun wilayah, pemilahan sampah dan bank sampah, kerja bakti, penghijauan", "ind": "WR dan stasi yang melaksanakan sekurang-kurangnya satu program per tahun", "t27": "100%", "pic": "Ketua WR, Ketua Stasi, Pengurus OMK", "progs": ["59", "60"]}, {"no": "4.6.2", "txt": "Pendidikan ekologi (Laudato Si') bagi OMK dan Sekami", "ind": "Kegiatan per tahun", "t27": "≥1 kali", "pic": "Pengurus OMK, Pembina Sekami", "progs": ["59"]}, {"no": "5.1.1", "txt": "Kajian dan revitalisasi sekolah Katolik di wilayah pelayanan: (1) pembentukan tim kajian internal dengan surat penunjukan Pastor Paroki; (2) pemetaan data tren siswa dan rasio biaya–pendapatan tiap unit sekolah; (3) penilaian kelayakan dan klasifikasi tiap sekolah: Sehat, Perlu Intervensi, atau Kritis; (4) rekomendasi kepada DPP dan Yayasan Pendidikan Katolik untuk pengambilan keputusan bersama; (5) pelaksanaan dan pemantauan tindak lanjut hasil kajian", "ind": "Tahapan kajian terlaksana; sekolah yang terklasifikasi dan memiliki keputusan serta rencana tindak lanjut; kondisi sekolah dipantau setiap tahun", "t27": "Keputusan bersama dan rencana tindak lanjut tiap unit; pelaksanaan dimulai", "pic": "Pastor Paroki, Tim Kajian, DPP, Yayasan Pendidikan Katolik", "progs": ["63"]}, {"no": "5.1.2", "txt": "Peningkatan kesejahteraan guru dan dukungan tenaga pendidik", "ind": "Dukungan kesejahteraan guru", "t27": "Meningkat", "pic": "Seksi Pendidikan, DKP", "progs": ["66"]}, {"no": "5.1.3", "txt": "Kemitraan paroki, Yayasan, dan sekolah", "ind": "Forum koordinasi per tahun", "t27": "2 kali", "pic": "Pastor Paroki, Seksi Pendidikan", "progs": ["67"]}, {"no": "5.2.1", "txt": "Revitalisasi perpustakaan rohani dan pengadaan buku", "ind": "Buku baru yang tercatat dalam inventaris per tahun", "t27": "≥100", "pic": "Seksi Pendidikan, Ketua Stasi", "progs": ["71"]}, {"no": "5.2.2", "txt": "Pembinaan Sekami rutin dan pelatihan pembina", "ind": "WR yang menjalankan Sekami; kehadiran pembina pada rekoleksi", "t27": "WR 70%; ≥85%", "pic": "Pembina Sekami, Ketua WR", "progs": ["05"]}, {"no": "5.3.1", "txt": "Aktivasi Seksi Pendidikan paroki dan pendataan siswa Katolik di sekolah non-Katolik", "ind": "Seksi aktif; siswa terdata", "t27": "Seksi aktif; 100% terdata", "pic": "Seksi Pendidikan", "progs": ["72"]}, {"no": "5.3.2", "txt": "Pembinaan iman rutin bagi siswa Katolik di sekolah non-Katolik per jenjang", "ind": "Pertemuan pembinaan iman rutin", "t27": "Persiapan", "pic": "Seksi Pendidikan", "progs": ["72"]}, {"no": "5.3.3", "txt": "Koordinasi penyediaan guru PAK dan penggunaan modul PAK", "ind": "Kebutuhan guru PAK terkoordinasi", "t27": "Pemetaan kebutuhan", "pic": "Seksi Pendidikan, Pastor Paroki", "progs": ["68", "73", "74"]}, {"no": "6.1.1", "txt": "Pencatatan dan pelaporan keuangan yang transparan di WR, kategorial, dan stasi", "ind": "Unit yang mencatat dan melapor secara berkala", "t27": "85%", "pic": "Bendahara, Ketua WR, Ketua Stasi", "progs": ["86"]}, {"no": "6.1.2", "txt": "Pelatihan aplikator keuangan dan Dewan Keuangan Paroki; sistem informasi keuangan terintegrasi dengan Keuskupan", "ind": "Aplikator terlatih; pelatihan DKP per tahun", "t27": "Aplikator 95%; DKP 2 kali", "pic": "DKP, Bendahara", "progs": ["79", "81", "82"]}, {"no": "6.1.3", "txt": "Laporan keuangan paroki ke Keuskupan tepat waktu dan penyampaian ringkasan keuangan kepada umat", "ind": "Laporan tepat waktu; pengumuman tahunan", "t27": "100%; 1 kali", "pic": "Pastor Paroki, Bendahara", "progs": ["84", "86"]}, {"no": "6.1.4", "txt": "Pemeriksaan berkala keuangan unit dan penerapan pedoman pengelolaan harta benda Gereja Keuskupan", "ind": "Pemeriksaan per tahun; penerapan pedoman", "t27": "2 kali; ≥50%", "pic": "Pastor Paroki, DKP, Tim Monev", "progs": ["77", "78", "80"]}, {"no": "6.2.1", "txt": "Inventarisasi aset secara digital dan pembaruan data aset berkala; sinkronisasi dan rekonsiliasi dengan Keuskupan", "ind": "Aset yang terinventarisasi dan diperbarui", "t27": "100%", "pic": "Seksi Aset, DKP", "progs": ["83", "84"]}, {"no": "6.2.2", "txt": "Legalitas aset: pengurusan sertifikat tanah dan digitalisasi sertifikat", "ind": "Tanah paroki dan stasi yang bersertifikat", "t27": "60%", "pic": "Seksi Aset, Pastor Paroki", "progs": ["85"]}, {"no": "6.2.3", "txt": "Penyusunan SOP aset dan penyediaan gudang aset", "ind": "SOP berlaku; gudang aset tersedia", "t27": "Berlaku", "pic": "Seksi Aset", "progs": ["85"]}, {"no": "6.2.4", "txt": "Pemeliharaan preventif aset vital (AC, sound system, peralatan liturgi, atap, taman)", "ind": "Aset vital yang dipelihara sesuai jadwal", "t27": "≥80%", "pic": "Seksi Aset, Seksi Pembangunan", "progs": ["83"]}, {"no": "6.3.1", "txt": "Perbaikan gedung gereja dan sarana yang rusak (atap, plafon, talang, kunci pintu, pagar)", "ind": "Perbaikan sesuai rencana; pemeliharaan berkala", "t27": "Pemeliharaan berkala", "pic": "DPP, Seksi Pembangunan", "progs": ["88"]}, {"no": "6.3.2", "txt": "Perencanaan dan pembangunan sakrarium gereja paroki: desain, sosialisasi kepada umat, perizinan, pembangunan", "ind": "Tahapan pembangunan", "t27": "Pembangunan", "pic": "Panitia pembangunan, Pastor Paroki", "progs": ["88"]}, {"no": "6.3.3", "txt": "Pembangunan aula paroki oleh panitia pembangunan yang akuntabel", "ind": "Tahapan pembangunan", "t27": "Pembangunan tahap I", "pic": "Panitia pembangunan, DKP", "progs": ["88"]}];
+function rktPicWajib(){
+  const k = String(currentKategoriPengisi || '').trim();
+  return k.indexOf('Pusat Paroki') === 0;
+}
+function rktUpdatePicLabel(){
+  const el = document.getElementById('rktPicOpt');
+  if(el) el.textContent = rktPicWajib() ? '(wajib)' : '(opsional)';
+}
+function renstraForProg(num){
+  return RENSTRA_PAROKI.filter(function(r){ return r.progs.indexOf(String(num).padStart(2,'0')) !== -1; });
+}
+function renstraTag(num){
+  const l = renstraForProg(num);
+  return l.length ? l.map(function(r){ return r.no; }).join(', ') : '';
+}
+function renderRenstraHint(num){
+  const box = document.getElementById('rktRenstraHint');
+  const dl = document.getElementById('rktPicList');
+  if(dl){
+    const sugg = [];
+    if(num) renstraForProg(num).forEach(function(r){ r.pic.split(',').forEach(function(x){ x = x.trim(); if(x && sugg.indexOf(x) === -1) sugg.push(x); }); });
+    dl.innerHTML = sugg.map(function(x){ return '<option value="' + escapeHtml(x) + '">'; }).join('');
+  }
+  if(!num){ box.style.display='none'; box.innerHTML=''; return; }
+  const l = renstraForProg(num);
+  box.style.display='block';
+  if(!l.length){
+    box.innerHTML = '<b>Renstra Paroki:</b> program Keuskupan ini belum dijabarkan secara khusus di Bab V Renstra Paroki. Usulan tetap dapat diajukan sebagai program tambahan, dan akan dibahas di DPP/Pastor.';
+    return;
+  }
+  box.innerHTML = '<b>Terkait Renstra Paroki Raja Damai (Bab V):</b>' + l.map(function(r){
+    return '<div class="rkt-renstra-row"><span class="rkt-renstra-no">' + escapeHtml(r.no) + '</span> ' + escapeHtml(r.txt) +
+      '<div class="rkt-renstra-sub">Indikator: ' + escapeHtml(r.ind) + ' &middot; Target 2027: ' + escapeHtml(r.t27) + ' &middot; PJ: ' + escapeHtml(r.pic) + '</div></div>';
+  }).join('');
+}
+
 function populateRktBidangSelect(){
   const sel = document.getElementById('rktBidangSelect');
   const secs = [];
@@ -2012,22 +2077,28 @@ document.getElementById('rktBidangSelect').addEventListener('change', function()
   const progSel = document.getElementById('rktProgramStrategisSelect');
   if(!sec){
     progSel.innerHTML = '<option value="">— Pilih Bidang dahulu —</option>';
+    renderRenstraHint('');
     return;
   }
   const list = CATEGORIES.filter(function(c){ return c.sec === sec; });
   progSel.innerHTML = '<option value="">— Pilih Program Strategis —</option>' +
-    list.map(function(c){ return '<option value="' + c.num + '">' + c.num + '. ' + escapeHtml(c.title) + '</option>'; }).join('');
+    list.map(function(c){ var t = renstraTag(c.num); return '<option value="' + c.num + '">' + c.num + '. ' + escapeHtml(c.title) + (t ? '  \u25B8 Renstra ' + t : '  \u25B8 (belum di Renstra Paroki)') + '</option>'; }).join('');
+  renderRenstraHint('');
 });
+
+document.getElementById('rktProgramStrategisSelect').addEventListener('change', function(){ renderRenstraHint(this.value); rktUpdatePicLabel(); });
 
 document.getElementById('rktSubmitBaru').addEventListener('click', async function(){
   const bidang = document.getElementById('rktBidangSelect').value;
   const progSelEl = document.getElementById('rktProgramStrategisSelect');
   const progNum = progSelEl.value;
-  const progTitle = progNum ? progSelEl.options[progSelEl.selectedIndex].text : '';
+  const progCat = CATEGORIES.filter(function(c){ return c.num === progNum; })[0];
+  const progTitle = progCat ? (progCat.num + '. ' + progCat.title) : '';
   const nama = document.getElementById('rktNamaProgram').value.trim();
   const sasaran = document.getElementById('rktSasaran').value.trim();
   const indikator = document.getElementById('rktIndikator').value.trim();
   const waktu = document.getElementById('rktWaktu').value.trim();
+  const pic = document.getElementById('rktPic').value.trim();
   const perkiraanAnggaran = document.getElementById('rktPerkiraanAnggaran').value;
   const sumberAnggaran = document.getElementById('rktSumberAnggaran').value;
   const msgEl = document.getElementById('rktFormMsg');
@@ -2036,6 +2107,11 @@ document.getElementById('rktSubmitBaru').addEventListener('click', async functio
 
   if(!bidang || !progNum || !nama || !indikator){
     msgEl.textContent = 'Mohon lengkapi minimal: Bidang, Program Strategis, Nama Program, dan Indikator Pencapaian.';
+    msgEl.classList.add('err');
+    return;
+  }
+  if(rktPicWajib() && !pic){
+    msgEl.textContent = 'Kolom Penanggung Jawab (PIC) wajib diisi, misalnya nama seksi.';
     msgEl.classList.add('err');
     return;
   }
@@ -2049,7 +2125,7 @@ document.getElementById('rktSubmitBaru').addEventListener('click', async functio
   try{
     const res = await apiPost({
       action: 'addRktBaru', bidang: bidang, noProgramStrategis: progNum, namaProgramStrategis: progTitle,
-      namaProgramBaru: nama, sasaran: sasaran, indikator: indikator, waktu: waktu,
+      namaProgramBaru: nama, pic: pic, sasaran: sasaran, indikator: indikator, waktu: waktu,
       perkiraanAnggaran: perkiraanAnggaran, sumberAnggaran: sumberAnggaran, pin: currentPin || '',
     });
     if(res && res.ok){
@@ -2059,6 +2135,7 @@ document.getElementById('rktSubmitBaru').addEventListener('click', async functio
       document.getElementById('rktSasaran').value = '';
       document.getElementById('rktIndikator').value = '';
       document.getElementById('rktWaktu').value = '';
+      document.getElementById('rktPic').value = '';
       document.getElementById('rktPerkiraanAnggaran').value = '';
       document.getElementById('rktSumberAnggaran').value = '';
       document.getElementById('rktBidangSelect').value = '';
@@ -2103,6 +2180,7 @@ function renderRktBaru(){
       '<div class="rkt-item-title">' + escapeHtml(it.NamaProgramBaru || '') + '</div>' +
       '<div class="rkt-item-detail">' +
         '<b>Kategori pengusul:</b> ' + escapeHtml(it.Kategori || '') + '<br>' +
+        (it.PIC ? '<b>PIC:</b> ' + escapeHtml(it.PIC) + '<br>' : '') +
         '<b>Sasaran:</b> ' + escapeHtml(it.Sasaran || '-') + '<br>' +
         '<b>Indikator:</b> ' + escapeHtml(it.Indikator || '-') + '<br>' +
         '<b>Waktu:</b> ' + escapeHtml(it.Waktu || '-') + '<br>' +
@@ -2224,5 +2302,106 @@ document.getElementById('rktSubmitStatistik').addEventListener('click', async fu
   }finally{
     btn.disabled = false;
   }
+});
+
+// ============================================================
+// REKAPITULASI RKT 2027 (khusus Admin)
+// ============================================================
+const SECTION_ORDER_RKT = ['I. Persekutuan dan Kepemimpinan yang Melayani','II. Perbendaharaan Iman','III. Pelayanan Sabda dan Sakramen-Sakramen','IV. Kerasulan Awam','V. Pendidikan Katolik','VI. Harta benda Gereja'];
+
+function rktBuildRecap(){
+  const totalKelompok = categories.length;
+  let kelompokMulaiLanjutan = 0, kelompokStatistikDone = 0;
+  let totalYa = 0, totalTidak = 0, totalBelum = 0;
+  const perBidangLanjut = {}; SECTION_ORDER_RKT.forEach(function(s){ perBidangLanjut[s] = 0; });
+  const perBidangBaru = {}; SECTION_ORDER_RKT.forEach(function(s){ perBidangBaru[s] = 0; });
+
+  categories.forEach(function(cat){
+    const items = DATA.filter(function(it){ return it.c === cat; });
+    let answeredAny = false;
+    items.forEach(function(it){
+      const d = rktLanjutanData[it.n];
+      if(d && d.Lanjut2027 === 'Ya'){ totalYa++; answeredAny = true; perBidangLanjut[it.sec] = (perBidangLanjut[it.sec] || 0) + 1; }
+      else if(d && d.Lanjut2027 === 'Tidak'){ totalTidak++; answeredAny = true; }
+      else totalBelum++;
+    });
+    if(answeredAny) kelompokMulaiLanjutan++;
+    if(rktStatistikDone(cat)) kelompokStatistikDone++;
+  });
+
+  let totalAnggaran = 0;
+  const kelompokUsulan = {};
+  rktBaruData.forEach(function(it){
+    if(it.Bidang) perBidangBaru[it.Bidang] = (perBidangBaru[it.Bidang] || 0) + 1;
+    if(it.PerkiraanAnggaran) totalAnggaran += Number(it.PerkiraanAnggaran) || 0;
+    kelompokUsulan[it.Kategori] = true;
+  });
+
+  return {
+    totalKelompok: totalKelompok,
+    kelompokMulaiLanjutan: kelompokMulaiLanjutan,
+    kelompokStatistikDone: kelompokStatistikDone,
+    totalYa: totalYa, totalTidak: totalTidak, totalBelum: totalBelum, totalProgram: DATA.length,
+    totalUsulanBaru: rktBaruData.length, kelompokUsulanCount: Object.keys(kelompokUsulan).length,
+    totalAnggaran: totalAnggaran,
+    perBidangLanjut: perBidangLanjut, perBidangBaru: perBidangBaru,
+  };
+}
+
+function rktOpenRecap(){
+  const r = rktBuildRecap();
+  document.getElementById('rktRecapNote').innerHTML =
+    'Ringkasan progres seluruh 43 kelompok basis untuk Rencana Kerja 2027, per ' + new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) + '.';
+
+  const pctKelompok = Math.round(100 * r.kelompokMulaiLanjutan / r.totalKelompok);
+  const pctStatistik = Math.round(100 * r.kelompokStatistikDone / r.totalKelompok);
+  const pctProgram = Math.round(100 * (r.totalYa + r.totalTidak) / r.totalProgram);
+
+  let html = '';
+  html += '<div style="display:flex;gap:12px;margin-bottom:20px;flex-wrap:wrap;">';
+  html += rktStatCard(r.kelompokMulaiLanjutan + '/' + r.totalKelompok, 'Kelompok sudah mulai isi (' + pctKelompok + '%)');
+  html += rktStatCard(pctProgram + '%', 'Program 2026 sudah dijawab (' + (r.totalYa + r.totalTidak) + '/' + r.totalProgram + ')');
+  html += rktStatCard(r.kelompokStatistikDone + '/' + r.totalKelompok, 'Sudah isi Statistik Wilayah (' + pctStatistik + '%)');
+  html += rktStatCard(String(r.totalUsulanBaru), 'Usulan program baru (dari ' + r.kelompokUsulanCount + ' kelompok)');
+  html += rktStatCard(fmtRupiah(r.totalAnggaran) || 'Rp 0', 'Total perkiraan anggaran usulan baru');
+  html += '</div>';
+
+  html += '<table style="width:100%;border-collapse:collapse;font-size:12.5px;margin-bottom:10px;">' +
+    '<thead><tr style="background:var(--maroon);color:#fff;"><th style="padding:8px;text-align:left;">Bidang</th><th style="padding:8px;">Program Dilanjutkan (Ya)</th><th style="padding:8px;">Usulan Program Baru</th></tr></thead><tbody>';
+  SECTION_ORDER_RKT.forEach(function(sec, i){
+    html += '<tr' + (i % 2 === 0 ? ' style="background:var(--rowalt);"' : '') + '><td style="padding:8px;">' + escapeHtml(sec) + '</td>' +
+      '<td style="padding:8px;text-align:center;">' + (r.perBidangLanjut[sec] || 0) + '</td>' +
+      '<td style="padding:8px;text-align:center;">' + (r.perBidangBaru[sec] || 0) + '</td></tr>';
+  });
+  html += '</tbody></table>';
+
+  document.getElementById('rktRecapWrap').innerHTML = html;
+  document.getElementById('rktRecapOverlay').classList.add('open');
+  window.__rktRecapData = r;
+}
+function rktStatCard(big, label){
+  return '<div style="flex:1;min-width:150px;background:var(--rowalt);border:1px solid var(--line);border-radius:10px;padding:14px 16px;">' +
+    '<div style="font-size:22px;font-weight:800;color:var(--maroon);">' + big + '</div>' +
+    '<div style="font-size:11px;color:var(--gray);margin-top:2px;line-height:1.4;">' + label + '</div></div>';
+}
+
+document.getElementById('rktRecapBtn').addEventListener('click', rktOpenRecap);
+document.getElementById('rktRecapClose').addEventListener('click', function(){ document.getElementById('rktRecapOverlay').classList.remove('open'); });
+document.getElementById('rktRecapOverlay').addEventListener('click', function(e){ if(e.target === this) this.classList.remove('open'); });
+
+document.getElementById('rktCopyRecapBtn').addEventListener('click', function(){
+  const r = window.__rktRecapData;
+  if(!r) return;
+  let rows = ['Bidang\tProgram Dilanjutkan (Ya)\tUsulan Program Baru'];
+  SECTION_ORDER_RKT.forEach(function(sec){
+    rows.push(sec + '\t' + (r.perBidangLanjut[sec] || 0) + '\t' + (r.perBidangBaru[sec] || 0));
+  });
+  const text = rows.join('\n');
+  navigator.clipboard.writeText(text).then(function(){
+    const btn = document.getElementById('rktCopyRecapBtn');
+    const orig = btn.innerHTML;
+    btn.innerHTML = '<i class="ti ti-check"></i>Tersalin!';
+    setTimeout(function(){ btn.innerHTML = orig; }, 1500);
+  }).catch(function(){ alert('Gagal menyalin. Coba blok manual dari tabel.'); });
 });
 </script>
